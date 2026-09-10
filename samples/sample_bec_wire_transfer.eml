@@ -1,0 +1,29 @@
+Received: from mail-relay.targetcorp.internal (10.0.1.50) by mx01.targetcorp.internal (10.0.1.10) with ESMTP id trg10294; Wed, 09 Sep 2026 14:35:12 +0000
+Received: from gateway.cloudmail-filter.net (54.240.12.18) by mail-relay.targetcorp.internal (10.0.1.50) with ESMTPS id rly84729; Wed, 09 Sep 2026 14:35:10 +0000
+Received: from tor-exit-node.zwiebelfreunde.de (185.220.101.5) by gateway.cloudmail-filter.net (54.240.12.18) with ESMTP id gtw39847; Wed, 09 Sep 2026 14:35:05 +0000
+Authentication-Results: mx01.targetcorp.internal; spf=softfail (mail.targetcorp.internal: domain of executing-desk@vip-finance-portal.com does not designate 185.220.101.5 as permitted sender) smtp.mailfrom=executing-desk@vip-finance-portal.com; dkim=none; dmarc=fail (p=quarantine dis=none) header.from=acmecorp.com
+From: "Johnathan Doe (CEO)" <john.doe@acmecorp.com>
+Reply-To: "Executive Desk" <executing-desk@vip-finance-portal.com>
+To: "Sarah Jenkins (Finance Lead)" <sarah.jenkins@acmecorp.com>
+Subject: URGENT: Confidential Wire Transfer Authorization Required - Project Titan
+Date: Wed, 09 Sep 2026 14:34:50 +0000
+Message-ID: <20260909143450.48271.ceo@acmecorp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [185.220.101.5]
+X-Mailer: WebMail Executive Client 4.2
+
+Sarah,
+
+I am currently in an executive board meeting and cannot take phone calls. 
+
+We need to finalize the confidential Project Titan acquisition tranche immediately today before market close. Please initiate a wire transfer of $148,500 USD to our escrow legal counsel account right now.
+
+Do not delay or discuss this with anyone in the office until the public announcement is released tomorrow morning.
+
+Reply directly to this email with the wire confirmation number once submitted.
+
+Johnathan Doe
+Chief Executive Officer
+Acme Corporation
