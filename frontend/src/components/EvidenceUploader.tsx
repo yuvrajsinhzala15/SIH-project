@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { UploadCloud, FileCode, CheckCircle2, AlertCircle, X, Sparkles, ShieldAlert, KeyRound, FileWarning, ShieldCheck } from "lucide-react";
+import { UploadCloud, FileCode, AlertCircle, X, Sparkles, AlertTriangle, KeyRound, FileWarning, CheckCircle, ShieldCheck, Database } from "lucide-react";
 import { api } from "../services/api";
 
 interface EvidenceUploaderProps {
@@ -9,7 +9,7 @@ interface EvidenceUploaderProps {
 }
 
 export const EvidenceUploader: React.FC<EvidenceUploaderProps> = ({ isOpen, onClose, onIngestSuccess }) => {
-  const [activeTab, setActiveTab] = useState<"file" | "text" | "samples">("samples");
+  const [activeTab, setActiveTab] = useState<"samples" | "file" | "text">("samples");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [rawText, setRawText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -80,142 +80,191 @@ export const EvidenceUploader: React.FC<EvidenceUploaderProps> = ({ isOpen, onCl
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-2xl bg-slate-900 border border-cyan-800/60 rounded-xl shadow-2xl overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-2xl glass-panel-elevated rounded-2xl border border-cyan-500/25 shadow-[0_0_60px_rgba(0,0,0,0.85),0_0_30px_rgba(55,215,255,0.12)] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-slate-950 px-5 py-3 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <UploadCloud className="w-5 h-5 text-cyan-400" />
+        <div className="bg-[#0c1322]/90 px-5 py-4 border-b border-cyan-500/15 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center shadow-[0_0_15px_rgba(55,215,255,0.2)]">
+              <UploadCloud className="w-5 h-5 text-cyan-400" />
+            </div>
             <div>
-              <div className="text-xs font-bold text-white uppercase tracking-wider">
-                Forensic Email Ingestion & Analysis Engine
+              <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <span>Forensic Email Ingestion & Analysis Engine</span>
+                <span className="text-[9px] font-mono font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                  SECURE VAULT
+                </span>
               </div>
-              <div className="text-[10px] text-slate-400">
-                100% Defensible Evidence • Live DNS & GeoIP Lookups • Zero Synthetic Data
+              <div className="text-[10px] font-mono text-slate-400 flex items-center gap-2 mt-0.5">
+                <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                <span>Dual SHA-256 / SHA-3-256 Cryptographic Preservation & Telemetry Reconstruction</span>
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
-            <X className="w-5 h-5" />
+          <button
+            onClick={onClose}
+            className="w-7 h-7 rounded-lg bg-slate-800/50 hover:bg-slate-700/60 text-slate-400 hover:text-white border border-slate-700/50 flex items-center justify-center transition-colors"
+          >
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-800 bg-slate-950/60 text-xs">
+        <div className="flex border-b border-cyan-500/15 bg-[#080d17]/80 text-xs font-mono">
           <button
             onClick={() => setActiveTab("samples")}
-            className={`flex-1 py-2.5 font-semibold transition-all flex items-center justify-center gap-2 ${
-              activeTab === "samples" ? "text-cyan-400 border-b-2 border-cyan-400 bg-slate-900" : "text-slate-400 hover:text-slate-200"
+            className={`flex-1 py-3 transition-all flex items-center justify-center gap-2 font-medium ${
+              activeTab === "samples"
+                ? "text-cyan-300 border-b-2 border-cyan-400 bg-cyan-500/10 shadow-[inset_0_-2px_8px_rgba(55,215,255,0.2)]"
+                : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
             }`}
           >
-            <Sparkles className="w-4 h-4" />
-            1-Click Threat Presets
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Threat Presets</span>
           </button>
           <button
             onClick={() => setActiveTab("file")}
-            className={`flex-1 py-2.5 font-semibold transition-all flex items-center justify-center gap-2 ${
-              activeTab === "file" ? "text-cyan-400 border-b-2 border-cyan-400 bg-slate-900" : "text-slate-400 hover:text-slate-200"
+            className={`flex-1 py-3 transition-all flex items-center justify-center gap-2 font-medium ${
+              activeTab === "file"
+                ? "text-cyan-300 border-b-2 border-cyan-400 bg-cyan-500/10 shadow-[inset_0_-2px_8px_rgba(55,215,255,0.2)]"
+                : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
             }`}
           >
-            <UploadCloud className="w-4 h-4" />
-            Upload Custom .EML
+            <UploadCloud className="w-3.5 h-3.5 text-slate-400" />
+            <span>Upload .EML File</span>
           </button>
           <button
             onClick={() => setActiveTab("text")}
-            className={`flex-1 py-2.5 font-semibold transition-all flex items-center justify-center gap-2 ${
-              activeTab === "text" ? "text-cyan-400 border-b-2 border-cyan-400 bg-slate-900" : "text-slate-400 hover:text-slate-200"
+            className={`flex-1 py-3 transition-all flex items-center justify-center gap-2 font-medium ${
+              activeTab === "text"
+                ? "text-cyan-300 border-b-2 border-cyan-400 bg-cyan-500/10 shadow-[inset_0_-2px_8px_rgba(55,215,255,0.2)]"
+                : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]"
             }`}
           >
-            <FileCode className="w-4 h-4" />
-            Paste RFC 822 Headers
+            <FileCode className="w-3.5 h-3.5 text-slate-400" />
+            <span>Paste RFC 822 Headers</span>
           </button>
         </div>
 
         {/* Body Content */}
         <div className="p-5 space-y-4">
           {error && (
-            <div className="p-3 bg-red-950/50 border border-red-800/80 rounded-lg text-xs text-red-300 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-300 flex items-center gap-2.5 font-mono shadow-[0_0_15px_rgba(239,68,68,0.15)]">
+              <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
               <span>{error}</span>
             </div>
           )}
 
           {activeTab === "samples" && (
             <div className="space-y-3">
-              <p className="text-xs text-slate-300">
-                Select any verified forensic scenario to inspect real-time authentication analysis, GeoIP routing, and threat breakdown:
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-slate-400 font-mono">
+                  Select a forensic threat scenario to inspect real-time cryptographic verification and hop unwinding:
+                </p>
+              </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Preset 1: BEC Wire Transfer */}
                 <button
                   onClick={() => handleSelectSamplePreset(0)}
                   disabled={loading}
-                  className="p-3.5 rounded-xl border border-red-900/60 bg-red-950/20 hover:bg-red-950/40 text-left transition-all group flex flex-col justify-between"
+                  className="p-3.5 rounded-xl border border-red-500/25 bg-gradient-to-br from-red-500/10 via-slate-900/40 to-slate-900/60 hover:from-red-500/20 hover:border-red-500/40 text-left transition-all group flex flex-col justify-between shadow-lg"
                 >
-                  <div className="flex items-center gap-2 text-red-400 font-bold text-xs">
-                    <ShieldAlert className="w-4 h-4 text-red-400" />
-                    <span>Executive BEC Wire Fraud</span>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2 text-red-400 font-semibold text-xs">
+                      <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                      <span>BEC Wire Transfer ($148.5k)</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                      CRITICAL 96
+                    </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    CEO display-name spoofing requesting $148,500 wire transfer with TOR exit node routing.
+                  <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
+                    Executive impersonation with hidden Reply-To address diversion and TOR exit relay transit.
                   </p>
-                  <span className="mt-2 text-[10px] text-red-300 font-mono font-bold">Risk: CRITICAL (90+)</span>
+                  <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-slate-500">
+                    <span>Origin: 185.220.101.5</span>
+                    <span className="text-cyan-400 group-hover:translate-x-0.5 transition-transform">Ingest &rarr;</span>
+                  </div>
                 </button>
 
                 {/* Preset 2: Credential Harvester */}
                 <button
                   onClick={() => handleSelectSamplePreset(1)}
                   disabled={loading}
-                  className="p-3.5 rounded-xl border border-amber-900/60 bg-amber-950/20 hover:bg-amber-950/40 text-left transition-all group flex flex-col justify-between"
+                  className="p-3.5 rounded-xl border border-amber-500/25 bg-gradient-to-br from-amber-500/10 via-slate-900/40 to-slate-900/60 hover:from-amber-500/20 hover:border-amber-500/40 text-left transition-all group flex flex-col justify-between shadow-lg"
                 >
-                  <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
-                    <KeyRound className="w-4 h-4 text-amber-400" />
-                    <span>Credential Phishing Portal</span>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs">
+                      <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Credential Phishing Portal</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      HIGH 82
+                    </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Homoglyph domain <code className="text-amber-300 font-mono">rnicrosoft-security.com</code> with direct IP phishing link.
+                  <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
+                    Homoglyph domain <code className="text-amber-200 font-mono bg-amber-500/10 px-1 rounded">rnicrosoft-security.com</code> targeting M365 authentication.
                   </p>
-                  <span className="mt-2 text-[10px] text-amber-300 font-mono font-bold">Risk: HIGH (75+)</span>
+                  <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-slate-500">
+                    <span>Origin: 104.244.42.1</span>
+                    <span className="text-cyan-400 group-hover:translate-x-0.5 transition-transform">Ingest &rarr;</span>
+                  </div>
                 </button>
 
                 {/* Preset 3: Invoice Macro */}
                 <button
                   onClick={() => handleSelectSamplePreset(2)}
                   disabled={loading}
-                  className="p-3.5 rounded-xl border border-rose-900/60 bg-rose-950/20 hover:bg-rose-950/40 text-left transition-all group flex flex-col justify-between"
+                  className="p-3.5 rounded-xl border border-purple-500/25 bg-gradient-to-br from-purple-500/10 via-slate-900/40 to-slate-900/60 hover:from-purple-500/20 hover:border-purple-500/40 text-left transition-all group flex flex-col justify-between shadow-lg"
                 >
-                  <div className="flex items-center gap-2 text-rose-400 font-bold text-xs">
-                    <FileWarning className="w-4 h-4 text-rose-400" />
-                    <span>Supply Chain Invoice Macro</span>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2 text-purple-300 font-semibold text-xs">
+                      <FileWarning className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Supply Chain Invoice Macro</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      HIGH 74
+                    </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Overdue invoice with double extension <code className="text-rose-300 font-mono">.pdf.docm</code> containing embedded VBA macro.
+                  <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
+                    Overdue invoice with double extension <code className="text-purple-200 font-mono bg-purple-500/10 px-1 rounded">.pdf.docm</code> containing obfuscated VBA code.
                   </p>
-                  <span className="mt-2 text-[10px] text-rose-300 font-mono font-bold">Risk: HIGH (70+)</span>
+                  <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-slate-500">
+                    <span>Origin: 198.51.100.22</span>
+                    <span className="text-cyan-400 group-hover:translate-x-0.5 transition-transform">Ingest &rarr;</span>
+                  </div>
                 </button>
 
                 {/* Preset 4: Benign Newsletter */}
                 <button
                   onClick={() => handleSelectSamplePreset(3)}
                   disabled={loading}
-                  className="p-3.5 rounded-xl border border-emerald-900/60 bg-emerald-950/20 hover:bg-emerald-950/40 text-left transition-all group flex flex-col justify-between"
+                  className="p-3.5 rounded-xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 hover:from-emerald-500/20 hover:border-emerald-500/40 text-left transition-all group flex flex-col justify-between shadow-lg"
                 >
-                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span>Legitimate Azure Bulletin</span>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs">
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Legitimate Cloud Bulletin</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      BENIGN 12
+                    </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Strictly aligned SPF/DKIM/DMARC from official Microsoft outbound protection relay.
+                  <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
+                    Aligned SPF/DKIM/DMARC pass flags originating from verified SendGrid enterprise outbound cluster.
                   </p>
-                  <span className="mt-2 text-[10px] text-emerald-300 font-mono font-bold">Risk: CLEAN / BENIGN (&lt;20)</span>
+                  <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-slate-500">
+                    <span>Origin: 167.89.44.12</span>
+                    <span className="text-cyan-400 group-hover:translate-x-0.5 transition-transform">Ingest &rarr;</span>
+                  </div>
                 </button>
               </div>
             </div>
           )}
 
           {activeTab === "file" && (
-            <div className="border-2 border-dashed border-slate-700 hover:border-cyan-500 rounded-lg p-6 text-center cursor-pointer transition-colors bg-slate-950/40">
+            <div className="border-2 border-dashed border-cyan-500/30 hover:border-cyan-400/70 rounded-2xl p-8 text-center cursor-pointer transition-all bg-gradient-to-b from-cyan-950/20 to-transparent hover:bg-cyan-950/30 group">
               <input
                 type="file"
                 accept=".eml,.msg,.txt"
@@ -223,54 +272,59 @@ export const EvidenceUploader: React.FC<EvidenceUploaderProps> = ({ isOpen, onCl
                 className="hidden"
                 id="file-upload"
               />
-              <label htmlFor="file-upload" className="cursor-pointer space-y-2 block">
-                <UploadCloud className="w-8 h-8 text-cyan-400 mx-auto" />
-                <div className="text-xs font-bold text-slate-200">
-                  {selectedFile ? selectedFile.name : "Click to browse or drag & drop .eml file"}
+              <label htmlFor="file-upload" className="cursor-pointer space-y-3 block">
+                <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform shadow-[0_0_25px_rgba(55,215,255,0.25)]">
+                  <UploadCloud className="w-7 h-7 text-cyan-400" />
                 </div>
-                <div className="text-[10px] text-slate-400">
-                  {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : "Preserves original bytes with dual SHA-256 / SHA-3-256 cryptographic hashing"}
+                <div className="text-sm font-semibold text-white">
+                  {selectedFile ? selectedFile.name : "Select or drag & drop RFC 822 .eml file"}
+                </div>
+                <div className="text-[11px] text-cyan-300/70 font-mono">
+                  {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB (Ready for extraction)` : "Preserves bitstream with dual SHA-256 / SHA-3-256 cryptographic hashing"}
                 </div>
               </label>
             </div>
           )}
 
           {activeTab === "text" && (
-            <textarea
-              rows={8}
-              placeholder="Paste raw RFC 822 email headers (e.g. From, Received, Subject, Authentication-Results, body)..."
-              value={rawText}
-              onChange={(e) => setRawText(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 font-mono text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-            />
+            <div className="space-y-2">
+              <div className="text-[11px] font-mono text-slate-400">Direct RFC 822 Raw Headers Input:</div>
+              <textarea
+                rows={9}
+                placeholder="Paste raw RFC 822 email headers (e.g. Received: from..., Authentication-Results:..., From:..., Subject:..., Message-ID:...)..."
+                value={rawText}
+                onChange={(e) => setRawText(e.target.value)}
+                className="w-full bg-[#070b13] border border-cyan-500/20 rounded-xl p-3.5 font-mono text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition-all"
+              />
+            </div>
           )}
         </div>
 
         {/* Footer Actions */}
-        <div className="bg-slate-950 p-4 border-t border-slate-800 flex items-center justify-between">
+        <div className="bg-[#0c1322]/90 px-5 py-3.5 border-t border-cyan-500/15 flex items-center justify-between">
           <button
             onClick={handleSeedSamples}
             disabled={loading}
-            className="text-xs text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1.5"
+            className="text-xs text-cyan-400 hover:text-cyan-300 font-mono flex items-center gap-2 transition-colors"
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            Reload All 4 Demo Incidents
+            <Database className="w-3.5 h-3.5" />
+            <span>Reset Demo Threats Database</span>
           </button>
           
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white"
+              className="px-4 py-1.5 rounded-xl text-xs font-mono text-slate-400 hover:text-white bg-slate-800/40 hover:bg-slate-700/50 border border-slate-700/50 transition-colors"
             >
-              Close
+              Cancel
             </button>
             {activeTab !== "samples" && (
               <button
                 onClick={handleUpload}
                 disabled={loading}
-                className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-xs font-bold transition-all shadow-md shadow-cyan-600/30 flex items-center gap-2"
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold px-4 py-1.5 rounded-xl text-xs font-mono transition-all shadow-[0_0_20px_rgba(55,215,255,0.35)] flex items-center gap-2 disabled:opacity-50"
               >
-                {loading ? "Processing..." : "Preserve & Analyze Evidence"}
+                {loading ? "Processing..." : "Preserve & Ingest"}
               </button>
             )}
           </div>
@@ -279,4 +333,3 @@ export const EvidenceUploader: React.FC<EvidenceUploaderProps> = ({ isOpen, onCl
     </div>
   );
 };
-

@@ -1,5 +1,5 @@
 import React from "react";
-import { AlertOctagon, UserX, ArrowRight, ShieldCheck, Sparkles, HelpCircle } from "lucide-react";
+import { AlertOctagon, UserX, AlertTriangle, ShieldCheck, Fingerprint } from "lucide-react";
 import { DomainIntel } from "../services/api";
 
 interface DomainImpersonatorProps {
@@ -20,97 +20,100 @@ export const DomainImpersonator: React.FC<DomainImpersonatorProps> = ({
 
   return (
     <div className="glass-panel p-5 space-y-4">
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)] pb-3">
         <div>
           <div className="flex items-center gap-2">
-            <AlertOctagon className="w-5 h-5 text-orange-400" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-              Domain Spoofing & Lookalike Analysis (Homoglyphs & Typosquatting)
+            <Fingerprint className="w-4 h-4 text-[#F59E0B]" />
+            <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+              Domain Spoofing & Confusable Glyph Matrix
             </h2>
           </div>
           <p className="text-[11px] text-slate-400 mt-0.5">
-            Detects deceptive lookalike characters (e.g. Cyrillic 'а', or 'rn' mimicking 'm' in 'rnicrosoft.com') intended to trick the victim.
+            Evaluates Cyrillic/Greek homoglyphs, visual confusable character matrices, and brand impersonation.
           </p>
         </div>
-        <span className="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded">Brand Impersonation Engine</span>
+        <span className="text-[10px] font-mono text-[#F59E0B] bg-[rgba(245,158,11,0.1)] px-2.5 py-0.5 rounded-full border border-[rgba(245,158,11,0.3)]">
+          Adversarial Homoglyph Engine
+        </span>
       </div>
 
       {/* Reply-To Diversion Alert Banner */}
       {hasReplyMismatch && (
-        <div className="bg-red-950/60 border border-red-700/80 p-4 rounded-xl flex items-start gap-3 shadow-lg">
-          <UserX className="w-6 h-6 text-red-400 shrink-0 mt-0.5" />
+        <div className="bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.4)] p-4 rounded-xl flex items-start gap-3 shadow-[0_0_25px_rgba(239,68,68,0.2)] animate-pulse">
+          <UserX className="w-5 h-5 text-[#EF4444] shrink-0 mt-0.5" />
           <div className="text-xs space-y-1">
-            <div className="font-extrabold text-sm text-red-300">
-              🚨 Critical Routing Deception: Hidden Reply-To Address Mismatch
+            <div className="font-extrabold text-[#EF4444] uppercase tracking-wider font-mono">
+              CRITICAL: Deceptive Reply-To Routing Diversion
             </div>
-            <div className="text-slate-200 text-[11px] leading-relaxed">
-              The email displays sender <span className="font-mono font-bold text-white bg-slate-900 px-1.5 py-0.5 rounded">{fromAddr}</span>, but when the victim clicks "Reply", their response will secretly be sent to an attacker-controlled inbox at{" "}
-              <span className="font-mono font-bold text-red-300 bg-red-900/60 px-1.5 py-0.5 rounded">{replyTo}</span>!
+            <div className="text-slate-300 text-xs leading-relaxed">
+              Email sender displays <span className="font-mono text-white bg-[rgba(5,7,13,0.8)] px-2 py-0.5 rounded border border-[rgba(255,255,255,0.15)] font-bold">{fromAddr}</span>, but replies are redirected to adversary-controlled mailbox{" "}
+              <span className="font-mono text-[#EF4444] bg-[rgba(5,7,13,0.8)] px-2 py-0.5 rounded border border-[rgba(239,68,68,0.4)] font-bold">{replyTo}</span>.
             </div>
           </div>
         </div>
       )}
 
       {/* Domain Analysis Table */}
-      <div className="overflow-x-auto border border-slate-800 rounded-xl">
-        <table className="w-full text-left text-xs border-collapse">
+      <div className="overflow-x-auto border border-[rgba(255,255,255,0.08)] rounded-xl bg-[rgba(5,7,13,0.4)]">
+        <table className="forensic-table">
           <thead>
-            <tr className="border-b border-slate-800 text-slate-400 font-semibold bg-slate-900/90 font-sans">
-              <th className="p-3">Observed Domain</th>
-              <th className="p-3">Target Brand Impersonated</th>
-              <th className="p-3">Visual Similarity</th>
-              <th className="p-3">Homoglyph / Lookalike Breakdown</th>
-              <th className="p-3">Risk Assessment</th>
+            <tr>
+              <th>Observed Domain</th>
+              <th>Target Brand</th>
+              <th>Visual Similarity</th>
+              <th>Homoglyph / Punycode Substitution</th>
+              <th>Risk Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 font-mono">
+          <tbody className="divide-y divide-[rgba(255,255,255,0.04)] font-mono">
             {domains.map((d, idx) => (
-              <tr key={idx} className="hover:bg-slate-900/50 transition-colors">
-                <td className="p-3 font-bold text-cyan-300 text-sm">
+              <tr key={idx} className="hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+                <td className="font-mono font-bold text-white text-xs">
                   {d.domain}
                 </td>
-                <td className="p-3">
+                <td>
                   {d.target_brand ? (
-                    <span className="text-amber-300 font-extrabold text-xs">{d.target_brand}</span>
+                    <span className="text-[#37D7FF] font-sans font-bold text-xs">{d.target_brand}</span>
                   ) : (
-                    <span className="text-slate-500 font-sans">None (Independent Domain)</span>
+                    <span className="text-slate-500 font-sans text-xs">None (Independent)</span>
                   )}
                 </td>
-                <td className="p-3">
+                <td>
                   <div className="flex items-center gap-2 font-sans">
-                    <span className="font-mono font-bold text-slate-200">
+                    <span className="font-mono text-xs font-bold text-white">
                       {(d.similarity_score * 100).toFixed(0)}%
                     </span>
-                    <div className="w-20 bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div className="w-20 bg-[rgba(255,255,255,0.06)] h-2 rounded-full overflow-hidden border border-[rgba(255,255,255,0.1)]">
                       <div
-                        className={`h-full ${
-                          d.similarity_score >= 0.8 ? "bg-red-500" : "bg-emerald-500"
+                        className={`h-full rounded-full transition-all duration-700 ${
+                          d.similarity_score >= 0.8 ? "bg-gradient-to-r from-amber-500 to-red-500" : "bg-[#10B981]"
                         }`}
                         style={{ width: `${d.similarity_score * 100}%` }}
                       />
                     </div>
                   </div>
                 </td>
-                <td className="p-3 text-[11px] text-slate-300">
+                <td className="text-xs text-slate-300">
                   {d.is_homoglyph ? (
-                    <div className="text-red-400 font-sans bg-red-950/40 p-2 rounded border border-red-900/50">
-                      <strong className="block text-[10px] uppercase">Confusable Substitutions:</strong>
+                    <div className="text-[#EF4444] font-mono bg-[rgba(239,68,68,0.08)] p-2 rounded-lg border border-[rgba(239,68,68,0.3)] text-[11px] shadow-sm">
+                      <span className="font-sans font-bold text-slate-400 uppercase block text-[9px] mb-0.5">Confusable Glyphs:</span>
                       {Object.entries(d.homoglyph_breakdown).map(([k, v]) => `'${k}' ➔ '${v}'`).join(", ")}
                     </div>
                   ) : d.is_punycode ? (
-                    <span className="text-purple-400">Punycode (IDN): {d.punycode_decoded}</span>
+                    <span className="text-[#8B5CF6] font-mono">Punycode (IDN): {d.punycode_decoded}</span>
                   ) : (
-                    <span className="text-slate-400 font-sans">Standard Domain Characters</span>
+                    <span className="text-slate-500 font-sans text-xs">ASCII Clean Standard Domain</span>
                   )}
                 </td>
-                <td className="p-3 font-sans">
+                <td className="font-sans">
                   {d.is_suspicious ? (
-                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-red-950 text-red-300 border border-red-700">
-                      SUSPICIOUS SENDER
+                    <span className="inline-flex items-center gap-1 font-mono text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-[rgba(239,68,68,0.15)] text-[#EF4444] border border-[rgba(239,68,68,0.4)] shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                      ● SUSPICIOUS
                     </span>
                   ) : (
-                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700">
-                      LEGITIMATE DOMAIN
+                    <span className="inline-flex items-center gap-1 font-mono text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-[rgba(16,185,129,0.15)] text-[#10B981] border border-[rgba(16,185,129,0.4)]">
+                      ● BENIGN
                     </span>
                   )}
                 </td>
@@ -122,3 +125,4 @@ export const DomainImpersonator: React.FC<DomainImpersonatorProps> = ({
     </div>
   );
 };
+

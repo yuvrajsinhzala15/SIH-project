@@ -82,7 +82,8 @@ class AiThreatAnalysisEngine:
             "Invoice Fraud": 0.0,
             "Extortion": 0.0,
             "Delivery & Package Scam": 0.0,
-            "Payroll & Tax Scam": 0.0
+            "Payroll & Tax Scam": 0.0,
+            "Spam": 0.0
         }
         detected_signals: List[str] = []
 
@@ -185,7 +186,7 @@ class AiThreatAnalysisEngine:
             "financial_indicators": financial_indicators,
             "signals": detected_signals,
             "pii_redacted_count": sum(pii_stats.values()),
-            "model_name": "Antigravity-Cyber-Forensic-LLM-v2",
+            "model_name": "MailTrace-Cyber-Forensic-LLM-v2",
             "model_version": "2.5.0",
             "limitations": [
                 "Probabilistic AI inference - must be verified against cryptographic and routing facts.",

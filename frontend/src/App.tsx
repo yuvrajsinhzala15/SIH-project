@@ -14,7 +14,7 @@ import { EvidenceUploader } from "./components/EvidenceUploader";
 import { SearchModal } from "./components/SearchModal";
 import { CaseManagerModal } from "./components/CaseManagerModal";
 import { api, EvidenceSummary, EvidenceDetail } from "./services/api";
-import { Download, Printer, Copy, Check, Sparkles, ChevronDown, ChevronUp, RefreshCw, UploadCloud } from "lucide-react";
+import { Download, Printer, Copy, Check, Terminal, ChevronDown, ChevronUp, RefreshCw, UploadCloud, Shield, Hash } from "lucide-react";
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
@@ -123,8 +123,8 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Navigation Header */}
+    <div className="futuristic-bg min-h-screen text-slate-200 flex flex-col font-sans antialiased selection:bg-cyan-500/20 selection:text-cyan-200">
+      {/* Top Floating Command Dock Header */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -135,92 +135,126 @@ export const App: React.FC = () => {
         evidenceCount={evidenceList.length}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-[1600px] w-full mx-auto p-6 space-y-6">
+      {/* Main Workspace Container */}
+      <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 py-5 space-y-5">
         
-        {/* Interactive "How To Use" Guide Banner */}
-        <div className="glass-panel p-4 border-l-4 border-cyan-400 bg-gradient-to-r from-cyan-950/40 via-slate-900 to-slate-950">
-          <div className="flex items-center justify-between cursor-pointer" onClick={() => setShowGuide(!showGuide)}>
-            <div className="flex items-center gap-2.5">
-              <Sparkles className="w-5 h-5 text-cyan-400" />
+        {/* Streamlined Forensic Workflow SOP Guide Banner */}
+        <div className="glass-panel rounded-2xl border border-cyan-500/20 p-4 shadow-xl transition-all">
+          <div
+            className="flex items-center justify-between cursor-pointer select-none"
+            onClick={() => setShowGuide(!showGuide)}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(55,215,255,0.2)]">
+                <Terminal className="w-4 h-4 text-cyan-400" />
+              </div>
               <div>
-                <h1 className="text-sm font-extrabold text-white uppercase tracking-wider">
-                  How This Platform Works (Quick 5-Step Guide)
+                <h1 className="text-xs font-mono font-bold text-white tracking-wider uppercase flex items-center gap-2">
+                  <span>Forensic Workbench Standard Operating Procedure (SOP)</span>
+                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                    LIVE PLAYBOOK
+                  </span>
                 </h1>
-                <p className="text-xs text-slate-400">
-                  AI-assisted email forensic investigation & threat intelligence workbench.
+                <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                  Five-phase protocol for RFC 822 bitstream preservation, adversarial risk scoring, and adversary campaign attribution.
                 </p>
               </div>
             </div>
-            <button className="text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1">
-              <span>{showGuide ? "Hide Guide" : "Show Guide"}</span>
-              {showGuide ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            <button className="text-slate-400 hover:text-cyan-300 text-[11px] font-mono flex items-center gap-1.5 transition-colors px-2.5 py-1 rounded-lg bg-slate-800/40 border border-slate-700/50">
+              <span>{showGuide ? "COLLAPSE PROTOCOL" : "EXPAND PROTOCOL"}</span>
+              {showGuide ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
           </div>
 
           {showGuide && (
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-4 pt-3 border-t border-slate-800/80 text-xs">
-              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-                <span className="font-extrabold text-cyan-400 block">1️⃣ Select Incident</span>
-                <span className="text-slate-300">Pick any suspicious email from the left sidebar to load its evidence.</span>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-4 pt-3.5 border-t border-cyan-500/15 text-[11px]">
+              <div className="bg-[#0c1322]/80 p-3 rounded-xl border border-cyan-500/15 space-y-1 shadow-sm">
+                <span className="font-mono text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
+                  01 // INGEST EVIDENCE
+                </span>
+                <span className="text-slate-300 leading-relaxed block text-[11px]">
+                  Pick queued artifact from the left evidence vault or upload custom RFC 822 EML bitstream.
+                </span>
               </div>
-              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-                <span className="font-extrabold text-cyan-400 block">2️⃣ Threat Gauge (0-100)</span>
-                <span className="text-slate-300">See the exact mathematical score & reasons why the email is dangerous.</span>
+              <div className="bg-[#0c1322]/80 p-3 rounded-xl border border-cyan-500/15 space-y-1 shadow-sm">
+                <span className="font-mono text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
+                  02 // RISK GAUGING
+                </span>
+                <span className="text-slate-300 leading-relaxed block text-[11px]">
+                  Inspect calculated adversarial score, domain confusable glyphs, and heuristic indicators.
+                </span>
               </div>
-              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-                <span className="font-extrabold text-cyan-400 block">3️⃣ Trace World Route</span>
-                <span className="text-slate-300">Click <strong>Route & GeoIP</strong> to see the interactive map and SMTP hops.</span>
+              <div className="bg-[#0c1322]/80 p-3 rounded-xl border border-cyan-500/15 space-y-1 shadow-sm">
+                <span className="font-mono text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
+                  03 // ROUTE UNWINDING
+                </span>
+                <span className="text-slate-300 leading-relaxed block text-[11px]">
+                  Trace chronological RFC 822 relay hops timeline from border MTA boundary to destination.
+                </span>
               </div>
-              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-                <span className="font-extrabold text-purple-400 block">4️⃣ Ask AI Copilot</span>
-                <span className="text-slate-300">Click <strong>AI Copilot</strong> to ask questions like <em>"Why is this fake?"</em>.</span>
+              <div className="bg-[#0c1322]/80 p-3 rounded-xl border border-cyan-500/15 space-y-1 shadow-sm">
+                <span className="font-mono text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
+                  04 // FORENSIC COPILOT
+                </span>
+                <span className="text-slate-300 leading-relaxed block text-[11px]">
+                  Query evidence-grounded AI copilot for chain-of-custody advisory, IOC pivots, and legal notes.
+                </span>
               </div>
-              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-                <span className="font-extrabold text-emerald-400 block">5️⃣ Export Reports</span>
-                <span className="text-slate-300">Download court/SOC forensic HTML dossiers or STIX 2.1 JSON bundles.</span>
+              <div className="bg-[#0c1322]/80 p-3 rounded-xl border border-cyan-500/15 space-y-1 shadow-sm">
+                <span className="font-mono text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
+                  05 // DOSSIER EXPORT
+                </span>
+                <span className="text-slate-300 leading-relaxed block text-[11px]">
+                  Export structured OASIS STIX 2.1 JSON bundles or generate a court-admissible HTML dossier.
+                </span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Top Evidence Identity & Cryptographic Hash Strip */}
+        {/* Hero Evidence Identity & Dual-Hash Cryptographic Integrity Capsule */}
         {currentEvidence && (
-          <div className="glass-panel p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-slate-800">
-            <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="font-mono text-xs font-black text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-lg border border-cyan-800">
+          <div className="glass-panel-elevated rounded-2xl border border-cyan-500/25 p-4 shadow-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div className="space-y-2.5">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="font-mono text-xs font-bold text-cyan-300 bg-cyan-500/15 px-3 py-1 rounded-lg border border-cyan-500/30 shadow-[0_0_12px_rgba(55,215,255,0.2)]">
                   {currentEvidence.evidence_id}
                 </span>
-                <span className="text-sm font-extrabold text-white truncate max-w-xl">
-                  {currentEvidence.subject || "(No Subject)"}
+                <span className="text-sm font-semibold text-white truncate max-w-xl">
+                  {currentEvidence.subject || "(No Subject Header)"}
                 </span>
-                <span className="text-[11px] text-slate-400 font-mono">
-                  ({(currentEvidence.file_size / 1024).toFixed(1)} KB)
+                <span className="text-[11px] text-cyan-400/80 font-mono bg-slate-900/60 px-2 py-0.5 rounded border border-slate-700/60">
+                  {(currentEvidence.file_size / 1024).toFixed(1)} KB
                 </span>
               </div>
 
               {/* Dual-Hash Cryptographic Integrity Strip */}
-              <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-slate-400">
-                <div className="flex items-center gap-1.5 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase">SHA-256:</span>
-                  <span className="text-slate-200 text-[11px]">{currentEvidence.sha256.slice(0, 24)}...</span>
+              <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono">
+                <div className="flex items-center gap-2 bg-[#080e1a]/90 px-3 py-1.5 rounded-xl border border-cyan-500/20 shadow-sm">
+                  <div className="flex items-center gap-1 text-[10px] text-cyan-400 font-bold uppercase">
+                    <Hash className="w-3 h-3" />
+                    <span>SHA-256:</span>
+                  </div>
+                  <span className="text-slate-300 tracking-wider">{currentEvidence.sha256.slice(0, 28)}...</span>
                   <button
                     onClick={() => handleCopy(currentEvidence.sha256, "sha256")}
-                    className="text-slate-400 hover:text-cyan-400 transition-colors ml-1"
-                    title="Copy Full SHA-256"
+                    className="text-slate-400 hover:text-cyan-300 transition-colors ml-1 p-0.5 rounded hover:bg-white/5"
+                    title="Copy Full SHA-256 Bitstream Hash"
                   >
                     {copiedHash === "sha256" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase">SHA-3-256:</span>
-                  <span className="text-slate-200 text-[11px]">{currentEvidence.sha3_256.slice(0, 24)}...</span>
+                <div className="flex items-center gap-2 bg-[#080e1a]/90 px-3 py-1.5 rounded-xl border border-purple-500/20 shadow-sm">
+                  <div className="flex items-center gap-1 text-[10px] text-purple-400 font-bold uppercase">
+                    <Shield className="w-3 h-3" />
+                    <span>SHA-3-256:</span>
+                  </div>
+                  <span className="text-slate-300 tracking-wider">{currentEvidence.sha3_256.slice(0, 28)}...</span>
                   <button
                     onClick={() => handleCopy(currentEvidence.sha3_256, "sha3")}
-                    className="text-slate-400 hover:text-purple-400 transition-colors ml-1"
-                    title="Copy Full SHA-3-256"
+                    className="text-slate-400 hover:text-purple-300 transition-colors ml-1 p-0.5 rounded hover:bg-white/5"
+                    title="Copy Full SHA-3-256 Keccak Hash"
                   >
                     {copiedHash === "sha3" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -228,34 +262,34 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Export Actions */}
-            <div className="flex items-center gap-2.5">
+            {/* Export Actions Strip */}
+            <div className="flex items-center gap-2.5 font-mono">
               <a
                 href={api.getStixUrl(currentEvidence.evidence_id)}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-700/80 px-3.5 py-2 rounded-xl text-xs font-bold transition-colors"
+                className="inline-flex items-center gap-2 bg-[#0c1322]/90 hover:bg-cyan-950/40 text-slate-300 hover:text-white border border-cyan-500/25 hover:border-cyan-400/60 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm"
               >
-                <Download className="w-4 h-4" />
-                STIX 2.1 JSON
+                <Download className="w-3.5 h-3.5 text-cyan-400" />
+                <span>OASIS STIX 2.1</span>
               </a>
 
               <a
                 href={api.getReportUrl(currentEvidence.evidence_id)}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-4 py-2 rounded-xl text-xs font-extrabold transition-all shadow-md shadow-cyan-600/30"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border border-blue-400/40 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-[0_0_20px_rgba(77,124,255,0.35)]"
               >
-                <Printer className="w-4 h-4" />
-                Print Forensic Dossier
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Forensic Dossier</span>
               </a>
             </div>
           </div>
         )}
 
-        {/* 2-Column Responsive Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Column: Evidence Incidents Selector */}
+        {/* 2-Column Forensic Workspace Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
+          {/* Left Column: Evidence Queue Vault */}
           <div className="lg:col-span-1">
             <EvidenceSelector
               evidenceList={evidenceList}
@@ -266,17 +300,27 @@ export const App: React.FC = () => {
           </div>
 
           {/* Right Column: Investigation Workspace */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-5">
             {loading ? (
-              <div className="glass-panel p-16 text-center text-slate-400 flex flex-col items-center justify-center space-y-3">
-                <div className="w-10 h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs font-semibold text-slate-300">Analyzing cryptographic artifacts & reconstructing route...</span>
+              <div className="glass-panel-elevated rounded-2xl border border-cyan-500/20 p-20 text-center text-slate-400 flex flex-col items-center justify-center space-y-4 shadow-2xl">
+                <div className="relative">
+                  <div className="w-12 h-12 border-2 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin" />
+                  <div className="w-6 h-6 border-2 border-purple-500/30 border-b-purple-400 rounded-full animate-spin absolute inset-3" style={{ animationDirection: 'reverse', animationDuration: '1s' }} />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs font-mono font-bold text-white tracking-wider uppercase block">
+                    Reconstructing forensic telemetry & relay topology...
+                  </span>
+                  <span className="text-[11px] font-mono text-slate-500 block">
+                    Validating cryptographic hashes and unrolling RFC 822 received headers
+                  </span>
+                </div>
               </div>
             ) : currentEvidence ? (
               <>
                 {/* 1. Triage & Intel Dashboard */}
                 {activeTab === "dashboard" && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div className="md:col-span-1">
                         <ThreatGauge
@@ -321,7 +365,7 @@ export const App: React.FC = () => {
 
                 {/* 3. Headers & Auth View */}
                 {activeTab === "headers" && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     <AuthMatrix
                       auth={currentEvidence.auth}
                       fromAddr={currentEvidence.from_addr}
@@ -332,29 +376,34 @@ export const App: React.FC = () => {
                   </div>
                 )}
 
-                {/* 4. Campaign Graph View */}
+                {/* 4. Campaign Attack Graph View */}
                 {activeTab === "graph" && <AttackGraphView />}
               </>
             ) : (
-              <div className="glass-panel p-16 text-center text-slate-400 space-y-4">
-                <div className="text-sm font-bold text-white">No active evidence records in workspace.</div>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
-                  Upload a custom suspicious email artifact (.eml) or load the pre-packaged forensic sample threats to start investigating.
+              <div className="glass-panel-elevated rounded-2xl border border-cyan-500/20 p-16 text-center text-slate-400 space-y-4 shadow-2xl">
+                <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(55,215,255,0.2)]">
+                  <Terminal className="w-6 h-6 text-cyan-400" />
+                </div>
+                <div className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                  No Active Forensic Record Loaded in Workspace
+                </div>
+                <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                  Ingest an RFC 822/5322 (.eml) artifact into the evidence vault or populate the benchmark threat presets to start telemetry triage.
                 </p>
-                <div className="flex items-center justify-center gap-3 pt-2">
+                <div className="flex items-center justify-center gap-3 pt-3">
                   <button
                     onClick={handleSeedSamples}
-                    className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5"
+                    className="bg-[#0c1322] hover:bg-cyan-950/30 text-slate-200 hover:text-white border border-cyan-500/30 px-4 py-2 rounded-xl text-xs font-mono font-semibold transition-all flex items-center gap-2 shadow-sm"
                   >
-                    <RefreshCw className="w-4 h-4" />
-                    Load Forensic Sample Threats
+                    <RefreshCw className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Load Benchmark Threat Samples</span>
                   </button>
                   <button
                     onClick={() => setUploaderOpen(true)}
-                    className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                    className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all shadow-[0_0_20px_rgba(55,215,255,0.35)] flex items-center gap-2"
                   >
-                    <UploadCloud className="w-4 h-4" />
-                    Upload Custom Email
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>Upload Custom Email (.EML)</span>
                   </button>
                 </div>
               </div>
@@ -363,7 +412,7 @@ export const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Interactive Modals */}
+      {/* Interactive HUD Modals */}
       {currentEvidence && (
         <CopilotModal
           isOpen={copilotOpen}

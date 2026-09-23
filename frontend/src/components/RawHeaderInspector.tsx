@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FileCode, Search, Filter, ShieldCheck, AlertTriangle, ShieldAlert, Eye } from "lucide-react";
+import { FileCode, Search, Eye, Terminal, Lock } from "lucide-react";
 import { EvidenceDetail } from "../services/api";
 
 interface RawHeaderInspectorProps {
@@ -9,7 +9,7 @@ interface RawHeaderInspectorProps {
 export const RawHeaderInspector: React.FC<RawHeaderInspectorProps> = ({ evidence }) => {
   const [filterTrust, setFilterTrust] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [viewBodyMode, setViewBodyMode] = useState<"plain" | "html" | "raw">("plain");
+  const [viewBodyMode, setViewBodyMode] = useState<"plain" | "html">("plain");
 
   const rawHeaders = evidence.raw_headers || [];
 
@@ -26,56 +26,56 @@ export const RawHeaderInspector: React.FC<RawHeaderInspectorProps> = ({ evidence
     <div className="space-y-5">
       {/* Header Forensic Inspector */}
       <div className="glass-panel p-5">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-4">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-[rgba(255,255,255,0.08)] pb-3.5 mb-3.5">
           <div className="flex items-center gap-2">
-            <FileCode className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-              Email Header Forensics & Trust Model (Section 12)
+            <Terminal className="w-4 h-4 text-[#37D7FF]" />
+            <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+              RFC 822 Header Integrity & Trust Verification Engine
             </h2>
           </div>
 
           {/* Filter & Search Bar */}
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-500" />
+              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
               <input
                 type="text"
-                placeholder="Search header name or value..."
+                placeholder="Filter header or value..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-[rgba(5,7,13,0.8)] border border-[rgba(255,255,255,0.1)] rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#37D7FF] font-mono transition-all"
               />
             </div>
 
-            <div className="flex items-center bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs">
+            <div className="flex items-center bg-[rgba(5,7,13,0.8)] p-1 rounded-lg border border-[rgba(255,255,255,0.08)] text-xs font-mono">
               <button
                 onClick={() => setFilterTrust("ALL")}
-                className={`px-2.5 py-1 rounded transition-all font-semibold ${
-                  filterTrust === "ALL" ? "bg-slate-700 text-white" : "text-slate-400 hover:text-slate-200"
+                className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                  filterTrust === "ALL" ? "bg-[rgba(55,215,255,0.15)] text-[#37D7FF] border border-[rgba(55,215,255,0.3)] shadow-[0_0_10px_rgba(55,215,255,0.15)]" : "text-slate-400 hover:text-white"
                 }`}
               >
                 All ({rawHeaders.length})
               </button>
               <button
                 onClick={() => setFilterTrust("HIGH_TRUST")}
-                className={`px-2.5 py-1 rounded transition-all font-semibold ${
-                  filterTrust === "HIGH_TRUST" ? "bg-emerald-900 text-emerald-300" : "text-slate-400 hover:text-emerald-400"
+                className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                  filterTrust === "HIGH_TRUST" ? "bg-[rgba(16,185,129,0.15)] text-[#10B981] border border-[rgba(16,185,129,0.3)]" : "text-slate-400 hover:text-[#10B981]"
                 }`}
               >
                 High
               </button>
               <button
                 onClick={() => setFilterTrust("MEDIUM_TRUST")}
-                className={`px-2.5 py-1 rounded transition-all font-semibold ${
-                  filterTrust === "MEDIUM_TRUST" ? "bg-blue-900 text-blue-300" : "text-slate-400 hover:text-blue-400"
+                className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                  filterTrust === "MEDIUM_TRUST" ? "bg-[rgba(77,124,255,0.15)] text-[#4D7CFF] border border-[rgba(77,124,255,0.3)]" : "text-slate-400 hover:text-[#4D7CFF]"
                 }`}
               >
                 Medium
               </button>
               <button
                 onClick={() => setFilterTrust("LOWER_TRUST")}
-                className={`px-2.5 py-1 rounded transition-all font-semibold ${
-                  filterTrust === "LOWER_TRUST" ? "bg-amber-900 text-amber-300" : "text-slate-400 hover:text-amber-400"
+                className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                  filterTrust === "LOWER_TRUST" ? "bg-[rgba(245,158,11,0.15)] text-[#F59E0B] border border-[rgba(245,158,11,0.3)]" : "text-slate-400 hover:text-[#F59E0B]"
                 }`}
               >
                 Lower
@@ -85,36 +85,36 @@ export const RawHeaderInspector: React.FC<RawHeaderInspectorProps> = ({ evidence
         </div>
 
         {/* Headers Table */}
-        <div className="overflow-x-auto max-h-96 overflow-y-auto border border-slate-800/80 rounded-lg">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead className="sticky top-0 bg-slate-950 z-10">
-              <tr className="border-b border-slate-800 text-slate-400 font-semibold">
-                <th className="p-3 w-44">Header Name</th>
-                <th className="p-3">Extracted Value</th>
-                <th className="p-3 w-36">Trust Classification</th>
+        <div className="overflow-x-auto max-h-[480px] overflow-y-auto border border-[rgba(255,255,255,0.08)] rounded-xl bg-[rgba(5,7,13,0.4)]">
+          <table className="forensic-table font-mono">
+            <thead className="sticky top-0 bg-[rgba(8,13,22,0.95)] backdrop-blur-md z-10 font-sans border-b border-[rgba(255,255,255,0.08)]">
+              <tr>
+                <th className="w-52">Header Field</th>
+                <th>Extracted RFC Value</th>
+                <th className="w-40">Trust Classification</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 font-mono">
+            <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
               {filteredHeaders.map((h, idx) => (
-                <tr key={idx} className="hover:bg-slate-900/40 transition-colors">
-                  <td className="p-3 font-bold text-cyan-400 align-top">
+                <tr key={idx} className="hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+                  <td className="font-bold text-[#37D7FF] align-top text-xs">
                     {h.name}
                   </td>
-                  <td className="p-3 text-slate-300 break-all text-[11px] leading-relaxed">
+                  <td className="text-slate-200 break-all text-xs leading-relaxed font-medium">
                     {h.value}
                   </td>
-                  <td className="p-3 align-top font-sans">
+                  <td className="align-top font-sans">
                     <span
                       title={h.explanation}
-                      className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded cursor-help ${
+                      className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full cursor-help border ${
                         h.trust_level === "HIGH_TRUST"
-                          ? "bg-emerald-950 text-emerald-300 border border-emerald-800/60"
+                          ? "bg-[rgba(16,185,129,0.15)] text-[#10B981] border-[rgba(16,185,129,0.35)]"
                           : h.trust_level === "MEDIUM_TRUST"
-                          ? "bg-blue-950 text-blue-300 border border-blue-800/60"
-                          : "bg-amber-950 text-amber-300 border border-amber-800/60"
+                          ? "bg-[rgba(77,124,255,0.15)] text-[#4D7CFF] border-[rgba(77,124,255,0.35)]"
+                          : "bg-[rgba(245,158,11,0.15)] text-[#F59E0B] border-[rgba(245,158,11,0.35)]"
                       }`}
                     >
-                      {h.trust_level}
+                      {h.trust_level === "HIGH_TRUST" ? "● HIGH" : h.trust_level === "MEDIUM_TRUST" ? "● MEDIUM" : "● LOWER"}
                     </span>
                   </td>
                 </tr>
@@ -126,27 +126,27 @@ export const RawHeaderInspector: React.FC<RawHeaderInspectorProps> = ({ evidence
 
       {/* Safe Message Body Sandbox View */}
       <div className="glass-panel p-5">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)] pb-3 mb-3.5">
           <div className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-purple-400" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-              Isolated Message Body Sandbox (Execution-Safe)
+            <Eye className="w-4 h-4 text-[#8B5CF6]" />
+            <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+              Execution-Isolated Quarantined Body Sandbox
             </h2>
           </div>
 
-          <div className="flex items-center bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs">
+          <div className="flex items-center bg-[rgba(5,7,13,0.8)] p-1 rounded-lg border border-[rgba(255,255,255,0.08)] text-xs font-mono">
             <button
               onClick={() => setViewBodyMode("plain")}
-              className={`px-3 py-1 rounded font-semibold transition-all ${
-                viewBodyMode === "plain" ? "bg-purple-900 text-purple-200" : "text-slate-400 hover:text-slate-200"
+              className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                viewBodyMode === "plain" ? "bg-[rgba(55,215,255,0.15)] text-[#37D7FF] border border-[rgba(55,215,255,0.3)]" : "text-slate-400 hover:text-white"
               }`}
             >
               Plaintext
             </button>
             <button
               onClick={() => setViewBodyMode("html")}
-              className={`px-3 py-1 rounded font-semibold transition-all ${
-                viewBodyMode === "html" ? "bg-purple-900 text-purple-200" : "text-slate-400 hover:text-slate-200"
+              className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                viewBodyMode === "html" ? "bg-[rgba(139,92,246,0.15)] text-[#8B5CF6] border border-[rgba(139,92,246,0.3)]" : "text-slate-400 hover:text-white"
               }`}
             >
               Sanitized HTML
@@ -154,7 +154,7 @@ export const RawHeaderInspector: React.FC<RawHeaderInspectorProps> = ({ evidence
           </div>
         </div>
 
-        <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 whitespace-pre-wrap max-h-72 overflow-y-auto leading-relaxed">
+        <div className="bg-[rgba(5,7,13,0.85)] p-4 rounded-xl border border-[rgba(255,255,255,0.08)] font-mono text-xs text-slate-200 whitespace-pre-wrap max-h-80 overflow-y-auto leading-relaxed select-text shadow-[inset_0_2px_10px_rgba(0,0,0,0.6)]">
           {viewBodyMode === "plain" ? (
             evidence.body_plain || "(No plaintext body found in message)"
           ) : (
@@ -165,3 +165,4 @@ export const RawHeaderInspector: React.FC<RawHeaderInspectorProps> = ({ evidence
     </div>
   );
 };
+

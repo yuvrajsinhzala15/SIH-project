@@ -1,5 +1,5 @@
 import React from "react";
-import { Shield, Search, Terminal, FileText, Database, Share2, UploadCloud, AlertTriangle, FolderGit2 } from "lucide-react";
+import { Shield, Search, Terminal, FileText, Database, Share2, UploadCloud, Bot, FolderGit2, Activity } from "lucide-react";
 
 interface HeaderProps {
   activeTab: string;
@@ -18,32 +18,52 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCopilot,
   onOpenSearch,
   onOpenCases,
+  evidenceCount = 0,
 }) => {
   return (
-    <header className="border-b border-slate-800 bg-slate-950/90 backdrop-blur sticky top-0 z-40 px-6 py-3">
-      <div className="flex items-center justify-between">
+    <header className="sticky top-0 z-50 px-6 py-3 bg-[rgba(8,13,22,0.75)] backdrop-blur-2xl border-b border-[rgba(255,255,255,0.08)] shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
+      <div className="max-w-[1780px] mx-auto flex items-center justify-between gap-4">
+        
         {/* Brand & Identity */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab("dashboard")}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-            <Shield className="w-6 h-6 text-white" />
+        <div 
+          className="flex items-center gap-3.5 cursor-pointer select-none group" 
+          onClick={() => setActiveTab("dashboard")}
+        >
+          <div className="relative">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#121E31] to-[#0A101D] border border-[rgba(55,215,255,0.3)] flex items-center justify-center text-[#37D7FF] shadow-[0_0_20px_rgba(55,215,255,0.15)] group-hover:border-[rgba(55,215,255,0.6)] group-hover:shadow-[0_0_25px_rgba(55,215,255,0.3)] transition-all">
+              <Shield className="w-4 h-4" />
+            </div>
+            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-[0_0_8px_#10B981] animate-pulse" />
           </div>
+
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold tracking-wider text-base text-white">ANTIGRAVITY</span>
-              <span className="text-xs px-2 py-0.5 rounded font-mono font-semibold bg-cyan-950/80 text-cyan-400 border border-cyan-800/60">
-                FORENSIC ENGINE v1.4
+              <span className="font-extrabold tracking-wider text-sm text-white group-hover:text-[#37D7FF] transition-colors">
+                MAILTRACE
+              </span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-[rgba(55,215,255,0.08)] text-[#37D7FF] border border-[rgba(55,215,255,0.25)]">
+                FORENSICS OS // v2.0
               </span>
             </div>
-            <div className="text-xs text-slate-400">AI Email Threat Detection, Geolocation & Forensic Intelligence</div>
+            <div className="text-[11px] text-[#94A3B8] flex items-center gap-2 font-mono">
+              <span className="flex items-center gap-1 text-[#10B981]">
+                <Activity className="w-3 h-3 animate-spin" style={{ animationDuration: '4s' }} />
+                <span>ACTIVE MONITOR</span>
+              </span>
+              <span className="text-[#475569]">•</span>
+              <span className="text-slate-400">[{evidenceCount} INCIDENT ARTIFACTS]</span>
+            </div>
           </div>
         </div>
 
-        {/* View Tabs */}
-        <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+        {/* Futuristic Glass Navigation Dock */}
+        <nav className="flex items-center bg-[rgba(13,20,32,0.65)] backdrop-blur-xl p-1 rounded-xl border border-[rgba(255,255,255,0.08)] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
           <button
             onClick={() => setActiveTab("dashboard")}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === "dashboard" ? "bg-cyan-600 text-white shadow" : "text-slate-400 hover:text-slate-200"
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+              activeTab === "dashboard"
+                ? "bg-gradient-to-r from-[rgba(55,215,255,0.15)] to-[rgba(77,124,255,0.15)] text-[#37D7FF] border border-[rgba(55,215,255,0.35)] shadow-[0_0_15px_rgba(55,215,255,0.12)]"
+                : "text-[#94A3B8] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
             }`}
           >
             <Terminal className="w-3.5 h-3.5" />
@@ -51,8 +71,10 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             onClick={() => setActiveTab("route")}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === "route" ? "bg-cyan-600 text-white shadow" : "text-slate-400 hover:text-slate-200"
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+              activeTab === "route"
+                ? "bg-gradient-to-r from-[rgba(77,124,255,0.15)] to-[rgba(139,92,246,0.15)] text-[#4D7CFF] border border-[rgba(77,124,255,0.35)] shadow-[0_0_15px_rgba(77,124,255,0.12)]"
+                : "text-[#94A3B8] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
             }`}
           >
             <Database className="w-3.5 h-3.5" />
@@ -60,60 +82,66 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             onClick={() => setActiveTab("headers")}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === "headers" ? "bg-cyan-600 text-white shadow" : "text-slate-400 hover:text-slate-200"
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+              activeTab === "headers"
+                ? "bg-gradient-to-r from-[rgba(139,92,246,0.15)] to-[rgba(217,70,239,0.15)] text-[#8B5CF6] border border-[rgba(139,92,246,0.35)] shadow-[0_0_15px_rgba(139,92,246,0.12)]"
+                : "text-[#94A3B8] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
-            Headers & Auth
+            Headers & RFC 822
           </button>
           <button
             onClick={() => setActiveTab("graph")}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === "graph" ? "bg-cyan-600 text-white shadow" : "text-slate-400 hover:text-slate-200"
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+              activeTab === "graph"
+                ? "bg-gradient-to-r from-[rgba(217,70,239,0.15)] to-[rgba(55,215,255,0.15)] text-[#D946EF] border border-[rgba(217,70,239,0.35)] shadow-[0_0_15px_rgba(217,70,239,0.12)]"
+                : "text-[#94A3B8] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
             }`}
           >
             <Share2 className="w-3.5 h-3.5" />
             Campaign Graph
           </button>
-        </div>
+        </nav>
 
-        {/* Action Controls */}
+        {/* Holographic Action Controls */}
         <div className="flex items-center gap-2.5">
           <button
             onClick={onOpenSearch}
-            className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 px-3 py-1.5 rounded-xl border border-slate-800 text-xs transition-colors"
+            className="flex items-center gap-2 bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.08)] text-[#94A3B8] hover:text-white px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)] hover:border-[rgba(55,215,255,0.3)] text-xs font-medium transition-all shadow-sm"
+            title="Search IOCs across all evidence (Ctrl+K)"
           >
-            <Search className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Search IOCs...</span>
-            <kbd className="font-mono text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-500">Ctrl+K</kbd>
+            <Search className="w-3.5 h-3.5 text-[#37D7FF]" />
+            <span>Search IOCs</span>
+            <kbd className="font-mono text-[10px] bg-[rgba(5,7,13,0.8)] px-1.5 py-0.5 rounded border border-[rgba(255,255,255,0.1)] text-[#37D7FF]">Ctrl+K</kbd>
           </button>
 
           <button
             onClick={onOpenCases}
-            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700/80 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+            className="flex items-center gap-1.5 bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.08)] text-slate-200 border border-[rgba(255,255,255,0.08)] hover:border-[rgba(77,124,255,0.3)] px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
           >
-            <FolderGit2 className="w-3.5 h-3.5 text-cyan-400" />
-            Cases
+            <FolderGit2 className="w-3.5 h-3.5 text-[#4D7CFF]" />
+            <span>Cases</span>
           </button>
 
           <button
             onClick={onOpenCopilot}
-            className="flex items-center gap-1.5 bg-purple-900/40 hover:bg-purple-900/60 text-purple-300 border border-purple-700/60 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm"
+            className="flex items-center gap-1.5 bg-[rgba(139,92,246,0.1)] hover:bg-[rgba(139,92,246,0.18)] text-violet-200 border border-[rgba(139,92,246,0.3)] px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.15)]"
           >
-            <AlertTriangle className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
-            AI Copilot
+            <Bot className="w-3.5 h-3.5 text-[#8B5CF6]" />
+            <span>AI Copilot</span>
           </button>
 
           <button
             onClick={onOpenUploader}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all shadow-md shadow-cyan-600/30"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-[#37D7FF] via-[#4D7CFF] to-[#8B5CF6] hover:opacity-95 text-slate-950 font-bold px-3.5 py-1.5 rounded-lg text-xs transition-all shadow-[0_0_20px_rgba(55,215,255,0.3)]"
           >
-            <UploadCloud className="w-4 h-4" />
-            Ingest Evidence
+            <UploadCloud className="w-3.5 h-3.5" />
+            <span>Ingest Evidence</span>
           </button>
         </div>
       </div>
     </header>
   );
 };
+
