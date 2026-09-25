@@ -125,8 +125,13 @@ export const EvidenceSelector: React.FC<EvidenceSelectorProps> = ({
                 <span className="truncate text-[11px] font-medium">{threat.label}</span>
               </div>
 
-              <div className="text-[10px] font-mono text-slate-400 truncate pt-1.5 border-t border-[rgba(255,255,255,0.06)]">
-                {ev.from_addr}
+              <div className="text-[10px] font-mono text-slate-400 truncate pt-1.5 border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between">
+                <span className="truncate">{ev.from_addr}</span>
+                {ev.blockchain_status === "REGISTERED" && (
+                  <span className="shrink-0 text-[9px] text-emerald-400 font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20" title="Cryptographically Anchored on Blockchain">
+                    ⛓ ON-CHAIN
+                  </span>
+                )}
               </div>
             </div>
           );

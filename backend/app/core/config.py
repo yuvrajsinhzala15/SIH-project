@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict
+from typing import List, Dict, Optional
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -7,6 +7,12 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./forensic_platform.db")
+    
+    # Blockchain Integrity & Chain of Custody Settings
+    BLOCKCHAIN_NETWORK: str = os.getenv("BLOCKCHAIN_NETWORK", "Ethereum Sepolia / Cryptographic Hash Ledger")
+    BLOCKCHAIN_RPC_URL: Optional[str] = os.getenv("BLOCKCHAIN_RPC_URL", None)
+    BLOCKCHAIN_CONTRACT_ADDRESS: Optional[str] = os.getenv("BLOCKCHAIN_CONTRACT_ADDRESS", None)
+    BLOCKCHAIN_PRIVATE_KEY: Optional[str] = os.getenv("BLOCKCHAIN_PRIVATE_KEY", None)
     
     # Forensic Scoring Weights (Configurable)
     WEIGHT_AUTH: float = 0.25      # Authentication failure (SPF/DKIM/DMARC)

@@ -324,6 +324,22 @@ class ForensicPipelineService:
 
         db.commit()
         db.refresh(evidence)
+
+        # 10. Immutable Blockchain Integrity Preservation
+        try:
+            from app.services.blockchain import BlockchainService
+            BlockchainService.register_evidence(
+                db=db,
+                evidence_id=ev_id_str,
+                actor=actor,
+                action="EVIDENCE_PRESERVED_ON_BLOCKCHAIN"
+            )
+            db.refresh(evidence)
+        except Exception as e:
+            # Graceful fallback: Never crash pipeline on external blockchain/network errors
+            evidence.blockchain_status = "PENDING"
+            db.commit()
+
         return evidence
 
     @staticmethod

@@ -135,6 +135,9 @@ export interface ChainOfCustody {
   actor: string;
   action: string;
   hash_snapshot: string;
+  blockchain_tx_hash?: string | null;
+  block_number?: number | null;
+  previous_hash?: string | null;
   details: Record<string, any>;
 }
 
@@ -149,6 +152,13 @@ export interface EvidenceDetail {
   received_at: string;
   status: string;
   case_id: number | null;
+  blockchain?: {
+    status: string;
+    tx_hash?: string | null;
+    block_number?: number | null;
+    registered_at?: string | null;
+    network?: string;
+  };
   
   subject: string;
   from_addr: string;
@@ -190,6 +200,8 @@ export interface EvidenceSummary {
   risk_level: string;
   classification: string;
   case_id: number | null;
+  blockchain_status?: string;
+  blockchain_tx_hash?: string | null;
 }
 
 export interface GraphNode {
@@ -199,7 +211,13 @@ export interface GraphNode {
   risk?: string;
   score?: number;
   evidence_id?: string;
+  case_id?: number | string | null;
+  campaign_id?: string;
   asn?: string;
+  country?: string;
+  infra_type?: string;
+  url?: string;
+  target_brand?: string | null;
 }
 
 export interface GraphEdge {
@@ -222,6 +240,33 @@ export interface AttackGraphData {
   }[];
   total_nodes: number;
   total_edges: number;
+  filtered_campaign?: string;
+  message?: string;
+}
+
+export interface BlockchainVerificationResult {
+  evidence_id: string;
+  verification_status: "VERIFIED" | "MODIFIED" | "UNREGISTERED";
+  result: "MATCH" | "MISMATCH" | "NOT_REGISTERED";
+  local_hash: string;
+  registered_hash: string;
+  blockchain_hash?: string;
+  tx_hash?: string;
+  block_number?: number;
+  timestamp?: string;
+  chain_intact?: boolean;
+  tamper_detected: boolean;
+  network: string;
+  message: string;
+}
+
+export interface BlockchainStatus {
+  valid: boolean;
+  total_blocks: number;
+  total_transactions: number;
+  latest_block: number;
+  latest_hash: string;
+  chain_status: string;
 }
 
 export interface CaseRecord {
@@ -288,8 +333,11 @@ export const api = {
     return res.json();
   },
 
-  async getAttackGraph(): Promise<AttackGraphData> {
-    const res = await fetch(`${API_BASE}/graph`);
+  async getAttackGraph(campaignId?: string): Promise<AttackGraphData> {
+    const url = campaignId && campaignId !== "ALL"
+      ? `${API_BASE}/graph?campaign_id=${encodeURIComponent(campaignId)}`
+      : `${API_BASE}/graph`;
+    const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to load attack graph");
     return res.json();
   },
@@ -366,5 +414,61 @@ export const api = {
 
   getReportUrl(evidenceId: string): string {
     return `${API_BASE}/evidence/${evidenceId}/report`;
+  },
+
+  async registerEvidenceBlockchain(evidenceId: string, actor: string = "SOC_ANALYST"): Promise<any> {
+    const res = await fetch(`${API_BASE}/evidence/${evidenceId}/blockchain/register?actor=${encodeURIComponent(actor)}`, {
+      method: "POST",
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: "Blockchain registration failed" }));
+      throw new Error(err.detail || "Blockchain registration failed");
+    }
+    return res.json();
+  },
+
+  async verifyEvidenceIntegrity(evidenceId: string): Promise<BlockchainVerificationResult> {
+    const res = await fetch(`${API_BASE}/evidence/${evidenceId}/blockchain/verify`, {
+      method: "POST",
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: "Evidence verification failed" }));
+      throw new Error(err.detail || "Evidence verification failed");
+    }
+    return res.json();
+  },
+
+  async getEvidenceBlockchainRecord(evidenceId: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/evidence/${evidenceId}/blockchain`);
+    if (!res.ok) throw new Error("Failed to fetch blockchain record");
+    return res.json();
+  },
+
+  async getBlockchainStatus(): Promise<BlockchainStatus> {
+    const res = await fetch(`${API_BASE}/blockchain/status`);
+    if (!res.ok) throw new Error("Failed to load blockchain status");
+    return res.json();
+  },
+
+  async getBlockchainLedger(): Promise<{ network: string; total_blocks: number; blocks: any[]; transactions: any[] }> {
+    const res = await fetch(`${API_BASE}/blockchain/ledger`);
+    if (!res.ok) throw new Error("Failed to fetch blockchain ledger");
+    return res.json();
+  },
+
+  async simulateEvidenceTamper(evidenceId: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/evidence/${evidenceId}/blockchain/simulate-tamper`, {
+      method: "POST",
+    });
+    if (!res.ok) throw new Error("Tamper simulation failed");
+    return res.json();
+  },
+
+  async restoreEvidenceTamper(evidenceId: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/evidence/${evidenceId}/blockchain/restore`, {
+      method: "POST",
+    });
+    if (!res.ok) throw new Error("Restore failed");
+    return res.json();
   }
 };

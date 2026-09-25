@@ -23,6 +23,12 @@ class Evidence(Base):
     status = Column(String(32), default="ANALYZED", index=True) # INGESTED, ANALYZED, ARCHIVED
     case_id = Column(Integer, ForeignKey("cases.id"), nullable=True)
 
+    # Blockchain Evidence Integrity & Chain of Custody
+    blockchain_tx_hash = Column(String(128), nullable=True, index=True)
+    blockchain_block_number = Column(Integer, nullable=True)
+    blockchain_registered_at = Column(DateTime(timezone=True), nullable=True)
+    blockchain_status = Column(String(32), default="UNREGISTERED", index=True) # UNREGISTERED, REGISTERED, PENDING
+
     # Relationships
     custody_logs = relationship("ChainOfCustody", back_populates="evidence", cascade="all, delete-orphan")
     email_record = relationship("EmailRecord", back_populates="evidence", uselist=False, cascade="all, delete-orphan")
@@ -49,6 +55,12 @@ class ChainOfCustody(Base):
     action = Column(String(64), nullable=False) # EVIDENCE_UPLOADED, EVIDENCE_HASHED, EVIDENCE_PARSED, etc.
     hash_snapshot = Column(String(64), nullable=False)
     details = Column(Text, default="{}")
+
+    # Blockchain Verification Anchoring
+    blockchain_tx_hash = Column(String(128), nullable=True, index=True)
+    block_number = Column(Integer, nullable=True)
+    previous_hash = Column(String(64), nullable=True)
+    merkle_root = Column(String(64), nullable=True)
 
     evidence = relationship("Evidence", back_populates="custody_logs")
 
@@ -318,3 +330,32 @@ class AnalystNote(Base):
 
     case = relationship("Case", back_populates="notes")
     evidence = relationship("Evidence", back_populates="notes")
+
+
+class BlockchainBlock(Base):
+    __tablename__ = "blockchain_blocks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    block_number = Column(Integer, unique=True, index=True, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=utc_now, nullable=False)
+    previous_hash = Column(String(64), nullable=False)
+    block_hash = Column(String(64), unique=True, index=True, nullable=False)
+    merkle_root = Column(String(64), nullable=False)
+    nonce = Column(Integer, default=0)
+    tx_count = Column(Integer, default=0)
+    data_json = Column(Text, default="[]")
+
+
+class BlockchainTransaction(Base):
+    __tablename__ = "blockchain_transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tx_hash = Column(String(128), unique=True, index=True, nullable=False)
+    block_number = Column(Integer, nullable=False, index=True)
+    evidence_id = Column(String(64), index=True, nullable=False)
+    case_id = Column(String(64), nullable=True, index=True)
+    evidence_hash = Column(String(64), index=True, nullable=False)
+    action = Column(String(64), nullable=False)
+    actor = Column(String(128), nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=utc_now, nullable=False)
+    metadata_json = Column(Text, default="{}")

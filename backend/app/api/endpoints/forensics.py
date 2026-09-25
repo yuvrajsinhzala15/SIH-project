@@ -4,8 +4,13 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, R
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.db.models import Evidence, Case, AnalystNote, ChainOfCustody, IOC, IpIntel, DomainIntel, UrlIntel
+from app.db.models import (
+    Evidence, Case, AnalystNote, ChainOfCustody, IOC, IpIntel, DomainIntel, UrlIntel,
+    BlockchainBlock, BlockchainTransaction
+)
+from app.core.config import settings
 from app.services.pipeline import ForensicPipelineService
+from app.services.blockchain import BlockchainService
 from app.engines.stix_generator import Stix21Generator
 from app.engines.report_generator import ForensicReportGenerator
 from app.engines.correlation import CorrelationEngine
@@ -89,7 +94,9 @@ def list_evidence(db: Session = Depends(get_db)):
             "final_score": score_val,
             "risk_level": risk_val,
             "classification": classification_val,
-            "case_id": ev.case_id
+            "case_id": ev.case_id,
+            "blockchain_status": ev.blockchain_status or "UNREGISTERED",
+            "blockchain_tx_hash": ev.blockchain_tx_hash
         })
     return results
 
@@ -121,6 +128,13 @@ def get_evidence_details(evidence_id: str, db: Session = Depends(get_db)):
         "received_at": ev.received_at.isoformat() if ev.received_at else None,
         "status": ev.status,
         "case_id": ev.case_id,
+        "blockchain": {
+            "status": ev.blockchain_status or "UNREGISTERED",
+            "tx_hash": ev.blockchain_tx_hash,
+            "block_number": ev.blockchain_block_number,
+            "registered_at": ev.blockchain_registered_at.isoformat() if ev.blockchain_registered_at else None,
+            "network": getattr(settings, "BLOCKCHAIN_NETWORK", "EVM Compatible Cryptographic Ledger")
+        },
         
         # Email Info
         "subject": email_rec.subject if email_rec else "",
@@ -283,6 +297,9 @@ def get_evidence_details(evidence_id: str, db: Session = Depends(get_db)):
             "actor": c.actor,
             "action": c.action,
             "hash_snapshot": c.hash_snapshot,
+            "blockchain_tx_hash": c.blockchain_tx_hash,
+            "block_number": c.block_number,
+            "previous_hash": c.previous_hash,
             "details": json.loads(c.details) if c.details else {}
         } for c in (ev.custody_logs or [])]
     }
@@ -337,16 +354,17 @@ def query_copilot(req: CopilotQueryRequest, db: Session = Depends(get_db)):
     return answer
 
 @router.get("/graph")
-def get_attack_graph(db: Session = Depends(get_db)):
-    """Builds and returns the comprehensive cross-email attack correlation graph."""
+def get_attack_graph(campaign_id: Optional[str] = Query(None), db: Session = Depends(get_db)):
+    """Builds and returns the comprehensive cross-email attack correlation graph with optional campaign filtering."""
     evidences = db.query(Evidence).all()
+    cases_map = {c.id: {"case_id": c.case_id, "title": c.title, "severity": c.severity} for c in db.query(Case).all()}
     evidence_payloads = []
     for ev in evidences:
         try:
             evidence_payloads.append(get_evidence_details(ev.evidence_id, db))
         except Exception:
             continue
-    graph = CorrelationEngine.build_threat_graph(evidence_payloads)
+    graph = CorrelationEngine.build_threat_graph(evidence_payloads, filter_campaign_id=campaign_id, cases_map=cases_map)
     return graph
 
 @router.get("/cases")
@@ -369,9 +387,12 @@ def list_cases(db: Session = Depends(get_db)):
 
 @router.post("/cases")
 def create_case(case_in: CaseCreate, db: Session = Depends(get_db)):
-    case_count = db.query(Case).count() + 1
+    max_id = db.query(func.max(Case.id)).scalar() or 0
+    candidate_num = max_id + 1
+    while db.query(Case).filter(Case.case_id == f"CASE-2026-{candidate_num:04d}").first():
+        candidate_num += 1
     new_case = Case(
-        case_id=f"CASE-2026-{case_count:04d}",
+        case_id=f"CASE-2026-{candidate_num:04d}",
         title=case_in.title,
         severity=case_in.severity,
         assigned_analyst=case_in.assigned_analyst,
@@ -519,3 +540,119 @@ def global_search(q: str = Query("", min_length=0), db: Session = Depends(get_db
         })
 
     return {"query": q, "total_matches": len(results), "results": results}
+
+
+# ============================================================================
+# BLOCKCHAIN EVIDENCE INTEGRITY & CHAIN OF CUSTODY ENDPOINTS
+# ============================================================================
+
+@router.post("/evidence/{evidence_id}/blockchain/register")
+def register_evidence_blockchain(
+    evidence_id: str,
+    actor: Optional[str] = Query("SOC_ANALYST"),
+    db: Session = Depends(get_db)
+):
+    """
+    Explicitly registers and anchors evidence SHA-256 hash to the blockchain integrity ledger.
+    Stores immutable block header, transaction hash (0x...), and updates Chain of Custody.
+    """
+    try:
+        receipt = BlockchainService.register_evidence(
+            db=db,
+            evidence_id=evidence_id,
+            actor=actor or "SOC_ANALYST",
+            action="EVIDENCE_PRESERVED_ON_BLOCKCHAIN"
+        )
+        return receipt
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Blockchain registration error: {str(e)}")
+
+
+@router.post("/evidence/{evidence_id}/blockchain/verify")
+def verify_evidence_integrity(evidence_id: str, db: Session = Depends(get_db)):
+    """
+    Cryptographic verification endpoint:
+    Recalculates local SHA-256 bitstream hash, queries registered blockchain transaction,
+    validates the block's Merkle link, and returns MATCH or MISMATCH.
+    """
+    try:
+        verification = BlockchainService.verify_evidence(db=db, evidence_id=evidence_id)
+        return verification
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Verification failure: {str(e)}")
+
+
+@router.get("/evidence/{evidence_id}/blockchain")
+def get_evidence_blockchain_record(evidence_id: str, db: Session = Depends(get_db)):
+    """Retrieves on-chain transaction reference and block details for a given evidence item."""
+    record = BlockchainService.get_evidence_blockchain_record(db=db, evidence_id=evidence_id)
+    if not record:
+        return {
+            "evidence_id": evidence_id,
+            "status": "UNREGISTERED",
+            "message": "Evidence is not yet anchored to the blockchain ledger."
+        }
+    return record
+
+
+@router.get("/blockchain/status")
+def get_blockchain_status(db: Session = Depends(get_db)):
+    """Returns network metadata, total mined blocks, transaction count, and chain integrity status."""
+    return BlockchainService.verify_entire_blockchain(db=db)
+
+
+@router.get("/blockchain/ledger")
+def get_blockchain_ledger(limit: int = 50, db: Session = Depends(get_db)):
+    """Returns all mined blocks and audit transactions from the cryptographic ledger."""
+    BlockchainService.init_ledger(db)
+    blocks = db.query(BlockchainBlock).order_by(BlockchainBlock.block_number.desc()).limit(limit).all()
+    txs = db.query(BlockchainTransaction).order_by(BlockchainTransaction.id.desc()).limit(limit).all()
+
+    return {
+        "network": getattr(settings, "BLOCKCHAIN_NETWORK", "EVM Compatible Cryptographic Ledger"),
+        "total_blocks": len(blocks),
+        "blocks": [{
+            "block_number": b.block_number,
+            "block_hash": b.block_hash,
+            "previous_hash": b.previous_hash,
+            "merkle_root": b.merkle_root,
+            "timestamp": b.timestamp.isoformat() if b.timestamp else None,
+            "tx_count": b.tx_count
+        } for b in blocks],
+        "transactions": [{
+            "tx_hash": t.tx_hash,
+            "block_number": t.block_number,
+            "evidence_id": t.evidence_id,
+            "evidence_hash": t.evidence_hash,
+            "action": t.action,
+            "actor": t.actor,
+            "timestamp": t.timestamp.isoformat() if t.timestamp else None
+        } for t in txs]
+    }
+
+
+@router.post("/evidence/{evidence_id}/blockchain/simulate-tamper")
+def simulate_evidence_tamper(evidence_id: str, db: Session = Depends(get_db)):
+    """
+    Controlled testing endpoint for SIH evaluation (Test 4):
+    Injects a 1-byte alteration into the stored bitstream to demonstrate live mismatch detection.
+    """
+    try:
+        result = BlockchainService.simulate_tamper(db=db, evidence_id=evidence_id)
+        return result
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+
+
+@router.post("/evidence/{evidence_id}/blockchain/restore")
+def restore_evidence_tamper(evidence_id: str, db: Session = Depends(get_db)):
+    """Restores the authentic bitstream after controlled tamper testing."""
+    try:
+        result = BlockchainService.restore_evidence(db=db, evidence_id=evidence_id)
+        return result
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))

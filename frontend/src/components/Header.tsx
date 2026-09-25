@@ -8,6 +8,7 @@ interface HeaderProps {
   onOpenCopilot: () => void;
   onOpenSearch: () => void;
   onOpenCases: () => void;
+  onOpenBlockchain?: () => void;
   evidenceCount?: number;
 }
 
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCopilot,
   onOpenSearch,
   onOpenCases,
+  onOpenBlockchain,
   evidenceCount = 0,
 }) => {
   return (
@@ -123,6 +125,17 @@ export const Header: React.FC<HeaderProps> = ({
             <FolderGit2 className="w-3.5 h-3.5 text-[#4D7CFF]" />
             <span>Cases</span>
           </button>
+
+          {onOpenBlockchain && (
+            <button
+              onClick={onOpenBlockchain}
+              className="flex items-center gap-1.5 bg-[rgba(16,185,129,0.08)] hover:bg-[rgba(16,185,129,0.16)] text-emerald-300 border border-[rgba(16,185,129,0.25)] px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              title="Blockchain Evidence Integrity & Chain of Custody"
+            >
+              <Shield className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Blockchain</span>
+            </button>
+          )}
 
           <button
             onClick={onOpenCopilot}

@@ -7,7 +7,11 @@ from app.api.endpoints.forensics import router as forensics_router
 from app.samples.seeder import seed_database
 
 # Create all database tables
-Base.metadata.create_all(bind=engine)
+from app.db.init_db import migrate_and_init_db
+from app.services.blockchain import BlockchainService
+
+# Safely verify/migrate database tables and columns
+migrate_and_init_db()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -25,12 +29,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Auto-seed sample evidence on startup
+# Auto-seed sample evidence and initialize blockchain ledger on startup
 @app.on_event("startup")
 def on_startup():
     db = SessionLocal()
     try:
         seed_database(db)
+        BlockchainService.init_ledger(db)
     finally:
         db.close()
 

@@ -13,8 +13,9 @@ import { CopilotModal } from "./components/CopilotModal";
 import { EvidenceUploader } from "./components/EvidenceUploader";
 import { SearchModal } from "./components/SearchModal";
 import { CaseManagerModal } from "./components/CaseManagerModal";
-import { api, EvidenceSummary, EvidenceDetail } from "./services/api";
-import { Download, Printer, Copy, Check, Terminal, ChevronDown, ChevronUp, RefreshCw, UploadCloud, Shield, Hash } from "lucide-react";
+import { BlockchainIntegrityModal } from "./components/BlockchainIntegrityModal";
+import { api, EvidenceSummary, EvidenceDetail, BlockchainVerificationResult } from "./services/api";
+import { Download, Printer, Copy, Check, Terminal, ChevronDown, ChevronUp, RefreshCw, UploadCloud, Shield, Hash, ShieldCheck, Link } from "lucide-react";
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
@@ -29,6 +30,9 @@ export const App: React.FC = () => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [caseModalOpen, setCaseModalOpen] = useState(false);
+  const [blockchainModalOpen, setBlockchainModalOpen] = useState(false);
+  const [quickVerifyResult, setQuickVerifyResult] = useState<BlockchainVerificationResult | null>(null);
+  const [verifyingQuick, setVerifyingQuick] = useState(false);
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
 
   // Keyboard shortcut Ctrl+K
@@ -132,6 +136,7 @@ export const App: React.FC = () => {
         onOpenCopilot={() => setCopilotOpen(true)}
         onOpenSearch={() => setSearchOpen(true)}
         onOpenCases={() => setCaseModalOpen(true)}
+        onOpenBlockchain={() => setBlockchainModalOpen(true)}
         evidenceCount={evidenceList.length}
       />
 
@@ -259,29 +264,86 @@ export const App: React.FC = () => {
                     {copiedHash === "sha3" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
                 </div>
+
+                {/* Blockchain Anchoring Capsule */}
+                <div className="flex items-center gap-2 bg-[#080e1a]/90 px-3 py-1.5 rounded-xl border border-emerald-500/25 shadow-sm">
+                  <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold uppercase">
+                    <Link className="w-3 h-3" />
+                    <span>BLOCKCHAIN:</span>
+                  </div>
+                  <span className={`text-[10px] font-bold ${
+                    currentEvidence.blockchain?.status === "REGISTERED" || currentEvidence.blockchain?.tx_hash
+                      ? "text-emerald-300"
+                      : "text-amber-400"
+                  }`}>
+                    {currentEvidence.blockchain?.status === "REGISTERED" || currentEvidence.blockchain?.tx_hash
+                      ? "✓ REGISTERED"
+                      : "UNREGISTERED"}
+                  </span>
+                  {currentEvidence.blockchain?.tx_hash && (
+                    <span className="text-slate-400 text-[10px] hidden sm:inline">
+                      ({currentEvidence.blockchain.tx_hash.slice(0, 10)}...)
+                    </span>
+                  )}
+                  <button
+                    onClick={() => setBlockchainModalOpen(true)}
+                    className="ml-1 text-emerald-400 hover:text-emerald-300 underline text-[10px] cursor-pointer"
+                  >
+                    Details
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Export Actions Strip */}
-            <div className="flex items-center gap-2.5 font-mono">
+            {/* Export & Blockchain Integrity Actions Strip */}
+            <div className="flex flex-wrap items-center gap-2.5 font-mono">
+              <button
+                onClick={async () => {
+                  setVerifyingQuick(true);
+                  try {
+                    const res = await api.verifyEvidenceIntegrity(currentEvidence.evidence_id);
+                    setQuickVerifyResult(res);
+                    setTimeout(() => setQuickVerifyResult(null), 4000);
+                  } catch (e: any) {
+                    alert("Verification error: " + (e.message || e));
+                  } finally {
+                    setVerifyingQuick(false);
+                  }
+                }}
+                disabled={verifyingQuick}
+                className="inline-flex items-center gap-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/35 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-50"
+                title="Cryptographically verify local bitstream against blockchain hash"
+              >
+                {verifyingQuick ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                <span>{quickVerifyResult ? `${quickVerifyResult.result} ✓` : "Verify Integrity"}</span>
+              </button>
+
+              <button
+                onClick={() => setBlockchainModalOpen(true)}
+                className="inline-flex items-center gap-1.5 bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/35 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-[0_0_15px_rgba(99,102,241,0.2)]"
+              >
+                <Link className="w-3.5 h-3.5" />
+                <span>Custody Ledger</span>
+              </button>
+
               <a
                 href={api.getStixUrl(currentEvidence.evidence_id)}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 bg-[#0c1322]/90 hover:bg-cyan-950/40 text-slate-300 hover:text-white border border-cyan-500/25 hover:border-cyan-400/60 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm"
+                className="inline-flex items-center gap-2 bg-[#0c1322]/90 hover:bg-cyan-950/40 text-slate-300 hover:text-white border border-cyan-500/25 hover:border-cyan-400/60 px-3 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm"
               >
                 <Download className="w-3.5 h-3.5 text-cyan-400" />
-                <span>OASIS STIX 2.1</span>
+                <span>STIX 2.1</span>
               </a>
 
               <a
                 href={api.getReportUrl(currentEvidence.evidence_id)}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border border-blue-400/40 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-[0_0_20px_rgba(77,124,255,0.35)]"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border border-blue-400/40 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-[0_0_20px_rgba(77,124,255,0.35)]"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print Forensic Dossier</span>
+                <span>Dossier</span>
               </a>
             </div>
           </div>
@@ -377,8 +439,22 @@ export const App: React.FC = () => {
                 )}
 
                 {/* 4. Campaign Attack Graph View */}
-                {activeTab === "graph" && <AttackGraphView />}
+                {activeTab === "graph" && (
+                  <AttackGraphView
+                    onSelectEvidence={(evId) => {
+                      setSelectedEvidenceId(evId);
+                      setActiveTab("dashboard");
+                    }}
+                  />
+                )}
               </>
+            ) : activeTab === "graph" ? (
+              <AttackGraphView
+                onSelectEvidence={(evId) => {
+                  setSelectedEvidenceId(evId);
+                  setActiveTab("dashboard");
+                }}
+              />
             ) : (
               <div className="glass-panel-elevated rounded-2xl border border-cyan-500/20 p-16 text-center text-slate-400 space-y-4 shadow-2xl">
                 <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(55,215,255,0.2)]">
@@ -445,6 +521,17 @@ export const App: React.FC = () => {
         onSelectEvidence={(evId) => {
           setSelectedEvidenceId(evId);
           setActiveTab("dashboard");
+        }}
+      />
+
+      <BlockchainIntegrityModal
+        evidence={currentEvidence}
+        isOpen={blockchainModalOpen}
+        onClose={() => setBlockchainModalOpen(false)}
+        onEvidenceUpdated={() => {
+          if (selectedEvidenceId) {
+            api.getEvidenceDetail(selectedEvidenceId).then(setCurrentEvidence);
+          }
         }}
       />
     </div>
