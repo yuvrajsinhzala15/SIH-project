@@ -26,36 +26,16 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-50 px-6 py-3 bg-[rgba(8,13,22,0.75)] backdrop-blur-2xl border-b border-[rgba(255,255,255,0.08)] shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
       <div className="max-w-[1780px] mx-auto flex items-center justify-between gap-4">
         
-        {/* Brand & Identity */}
+        {/* Brand & Identity - Clean SIH Style Logo */}
         <div 
-          className="flex items-center gap-3.5 cursor-pointer select-none group" 
+          className="flex items-center gap-4 cursor-pointer select-none py-1 group" 
           onClick={() => setActiveTab("dashboard")}
         >
-          <div className="relative">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#121E31] to-[#0A101D] border border-[rgba(55,215,255,0.3)] flex items-center justify-center text-[#37D7FF] shadow-[0_0_20px_rgba(55,215,255,0.15)] group-hover:border-[rgba(55,215,255,0.6)] group-hover:shadow-[0_0_25px_rgba(55,215,255,0.3)] transition-all">
-              <Shield className="w-4 h-4" />
-            </div>
-            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-[0_0_8px_#10B981] animate-pulse" />
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold tracking-wider text-sm text-white group-hover:text-[#37D7FF] transition-colors">
-                MAILTRACE
-              </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-[rgba(55,215,255,0.08)] text-[#37D7FF] border border-[rgba(55,215,255,0.25)]">
-                FORENSICS OS // v2.0
-              </span>
-            </div>
-            <div className="text-[11px] text-[#94A3B8] flex items-center gap-2 font-mono">
-              <span className="flex items-center gap-1 text-[#10B981]">
-                <Activity className="w-3 h-3 animate-spin" style={{ animationDuration: '4s' }} />
-                <span>ACTIVE MONITOR</span>
-              </span>
-              <span className="text-[#475569]">•</span>
-              <span className="text-slate-400">[{evidenceCount} INCIDENT ARTIFACTS]</span>
-            </div>
-          </div>
+          <img 
+            src="/edrishti-text-logo-bright.png" 
+            alt="E-Drishti" 
+            className="h-8 md:h-9 w-auto object-contain transition-transform group-hover:scale-[1.02]" 
+          />
         </div>
 
         {/* Futuristic Glass Navigation Dock */}

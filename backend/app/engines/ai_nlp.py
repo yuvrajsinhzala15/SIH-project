@@ -186,7 +186,7 @@ class AiThreatAnalysisEngine:
             "financial_indicators": financial_indicators,
             "signals": detected_signals,
             "pii_redacted_count": sum(pii_stats.values()),
-            "model_name": "MailTrace-Cyber-Forensic-LLM-v2",
+            "model_name": "E-Drishti-Cyber-Forensic-LLM-v2",
             "model_version": "2.5.0",
             "limitations": [
                 "Probabilistic AI inference - must be verified against cryptographic and routing facts.",

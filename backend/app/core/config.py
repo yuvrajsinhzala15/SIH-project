@@ -3,7 +3,7 @@ from typing import List, Dict, Optional
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "AI-Powered Email Threat Detection, Geolocation & Forensic Intelligence Platform"
+    PROJECT_NAME: str = "E-Drishti Forensic Platform"
     PROJECT_VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./forensic_platform.db")
