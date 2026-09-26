@@ -108,7 +108,7 @@ export const CaseManagerModal: React.FC<CaseManagerModalProps> = ({ isOpen, onCl
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-4xl glass-panel-elevated rounded-2xl border border-cyan-500/25 shadow-[0_0_60px_rgba(0,0,0,0.9),0_0_30px_rgba(55,215,255,0.15)] overflow-hidden flex flex-col h-[640px]">
         {/* Header */}
         <div className="bg-[#0c1322]/90 px-5 py-4 border-b border-cyan-500/15 flex items-center justify-between">

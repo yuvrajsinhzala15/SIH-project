@@ -30,7 +30,11 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
   useEffect(() => {
     if (isOpen) {
       loadBlockchainStatus();
+      loadLedger();
       setVerificationResult(null);
+      if (!evidence) {
+        setActiveSubTab("ledger");
+      }
     }
   }, [isOpen, evidence?.evidence_id]);
 
@@ -52,9 +56,10 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
     }
   };
 
-  if (!isOpen || !evidence) return null;
+  if (!isOpen) return null;
 
   const handleVerify = async () => {
+    if (!evidence) return;
     setVerifying(true);
     try {
       const res = await api.verifyEvidenceIntegrity(evidence.evidence_id);
@@ -69,6 +74,7 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
   };
 
   const handleRegister = async () => {
+    if (!evidence) return;
     setRegistering(true);
     try {
       await api.registerEvidenceBlockchain(evidence.evidence_id);
@@ -82,6 +88,7 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
   };
 
   const handleSimulateTamper = async () => {
+    if (!evidence) return;
     setSimulating(true);
     try {
       await api.simulateEvidenceTamper(evidence.evidence_id);
@@ -96,6 +103,7 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
   };
 
   const handleRestore = async () => {
+    if (!evidence) return;
     setSimulating(true);
     try {
       await api.restoreEvidenceTamper(evidence.evidence_id);
@@ -115,11 +123,11 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
   };
 
   const isRegistered =
-    evidence.blockchain?.status === "REGISTERED" ||
-    Boolean(evidence.blockchain?.tx_hash);
+    evidence?.blockchain?.status === "REGISTERED" ||
+    Boolean(evidence?.blockchain?.tx_hash);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in font-sans">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fade-in font-sans">
       <div className="bg-[#080d19] border border-cyan-500/30 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-[0_0_50px_rgba(55,215,255,0.15)] overflow-hidden">
         
         {/* Modal Header */}
@@ -131,16 +139,18 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
             <div>
               <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2.5">
                 <span>Evidence Cryptographic Integrity & Blockchain Layer</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold border ${
-                  isRegistered
-                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                    : "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                }`}>
-                  {isRegistered ? "✓ ON-CHAIN ANCHORED" : "UNREGISTERED"}
-                </span>
+                {evidence && (
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold border ${
+                    isRegistered
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                      : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                  }`}>
+                    {isRegistered ? "✓ ON-CHAIN ANCHORED" : "UNREGISTERED"}
+                  </span>
+                )}
               </h2>
               <p className="text-xs text-slate-400 font-mono mt-0.5">
-                Verifying RFC 822 bitstream SHA-256 against immutable decentralized ledger
+                {evidence ? `Verifying RFC 822 bitstream SHA-256 for [${evidence.evidence_id}] against immutable decentralized ledger` : "Viewing global decentralized cryptographic ledger and proof-of-custody anchors"}
               </p>
             </div>
           </div>
@@ -175,7 +185,7 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
             }`}
           >
             <History className="w-3.5 h-3.5" />
-            <span>Chain of Custody ({evidence.custody_logs?.length || 0})</span>
+            <span>Chain of Custody ({evidence?.custody_logs?.length || 0})</span>
           </button>
           <button
             onClick={() => {
@@ -198,6 +208,24 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
           
           {/* TAB 1: INTEGRITY VERIFICATION */}
           {activeSubTab === "verification" && (
+            !evidence ? (
+              <div className="bg-[#0b1222] border border-cyan-500/20 rounded-xl p-8 text-center space-y-4 shadow-lg">
+                <Shield className="w-12 h-12 text-cyan-400 mx-auto opacity-70" />
+                <div className="text-sm font-bold text-white uppercase tracking-wider">No Evidence Artifact Selected</div>
+                <p className="text-slate-400 max-w-md mx-auto text-xs leading-relaxed">
+                  Select an email artifact from the Evidence Vault to verify its on-chain SHA-256 integrity, simulate adversary bit-tampering, or audit the custodial timeline.
+                </p>
+                <button
+                  onClick={() => {
+                    setActiveSubTab("ledger");
+                    loadLedger();
+                  }}
+                  className="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 px-4 py-2 rounded-xl text-xs transition-all font-semibold cursor-pointer"
+                >
+                  Inspect Global Blockchain Ledger ({blockchainStatus?.total_blocks || 0} Blocks)
+                </button>
+              </div>
+            ) : (
             <div className="space-y-5">
               {/* Evidence On-Chain Identity Card */}
               <div className="bg-[#0b1222] border border-cyan-500/20 rounded-xl p-4 space-y-3 shadow-lg">
@@ -350,10 +378,20 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
                 </div>
               )}
             </div>
+            )
           )}
 
           {/* TAB 2: CHAIN OF CUSTODY TIMELINE */}
           {activeSubTab === "custody" && (
+            !evidence ? (
+              <div className="bg-[#0b1222] border border-cyan-500/20 rounded-xl p-8 text-center space-y-4 shadow-lg">
+                <History className="w-12 h-12 text-purple-400 mx-auto opacity-70" />
+                <div className="text-sm font-bold text-white uppercase tracking-wider">No Evidence Record Active</div>
+                <p className="text-slate-400 max-w-md mx-auto text-xs leading-relaxed">
+                  Select an email artifact from the Evidence Vault to inspect its cryptographic chain of custody audit trail.
+                </p>
+              </div>
+            ) : (
             <div className="space-y-4">
               <div className="text-[11px] text-slate-400 font-mono">
                 Chronological court-admissible audit log documenting every bitstream transformation, hash verification, and blockchain anchor.
@@ -390,6 +428,7 @@ export const BlockchainIntegrityModal: React.FC<BlockchainIntegrityModalProps> =
                 ))}
               </div>
             </div>
+            )
           )}
 
           {/* TAB 3: IMMUTABLE BLOCKCHAIN LEDGER */}

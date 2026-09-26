@@ -503,13 +503,11 @@ export const App: React.FC = () => {
       </main>
 
       {/* Interactive HUD Modals */}
-      {currentEvidence && (
-        <CopilotModal
-          isOpen={copilotOpen}
-          onClose={() => setCopilotOpen(false)}
-          evidenceId={currentEvidence.evidence_id}
-        />
-      )}
+      <CopilotModal
+        isOpen={copilotOpen}
+        onClose={() => setCopilotOpen(false)}
+        evidenceId={currentEvidence?.evidence_id || (evidenceList.length > 0 ? evidenceList[0].evidence_id : "")}
+      />
 
       <EvidenceUploader
         isOpen={uploaderOpen}

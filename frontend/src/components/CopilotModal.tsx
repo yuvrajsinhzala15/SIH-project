@@ -5,14 +5,16 @@ import { api } from "../services/api";
 interface CopilotModalProps {
   isOpen: boolean;
   onClose: () => void;
-  evidenceId: string;
+  evidenceId?: string;
 }
 
-export const CopilotModal: React.FC<CopilotModalProps> = ({ isOpen, onClose, evidenceId }) => {
+export const CopilotModal: React.FC<CopilotModalProps> = ({ isOpen, onClose, evidenceId = "" }) => {
   const [messages, setMessages] = useState<{ role: "user" | "assistant"; text: string; references?: string[] }[]>([
     {
       role: "assistant",
-      text: `Analyst session initialized. Grounded forensic reasoning engine loaded for evidence artifact [${evidenceId}]. Submit queries regarding authentication anomalies, routing hops, domain lookalikes, or forensic executive summary generation.`,
+      text: evidenceId
+        ? `Analyst session initialized. Grounded forensic reasoning engine loaded for evidence artifact [${evidenceId}]. Submit queries regarding authentication anomalies, routing hops, domain lookalikes, or forensic executive summary generation.`
+        : `Analyst session initialized. No evidence artifact selected yet. Select an evidence artifact from the triage vault to query grounded contextual telemetry, or ask general forensic protocol questions.`,
     },
   ]);
   const [inputQuery, setInputQuery] = useState("");
@@ -27,6 +29,18 @@ export const CopilotModal: React.FC<CopilotModalProps> = ({ isOpen, onClose, evi
     setMessages((prev) => [...prev, { role: "user", text: q }]);
     setInputQuery("");
     setLoading(true);
+
+    if (!evidenceId) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          text: "Please select an evidence record from the triage vault to inspect its grounded headers, DNS records, and adversarial telemetry.",
+        },
+      ]);
+      setLoading(false);
+      return;
+    }
 
     try {
       const resp = await api.queryCopilot(evidenceId, q);
@@ -59,7 +73,7 @@ export const CopilotModal: React.FC<CopilotModalProps> = ({ isOpen, onClose, evi
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-2xl bg-[rgba(13,20,32,0.95)] backdrop-blur-2xl border border-[rgba(139,92,246,0.35)] rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(139,92,246,0.15)] overflow-hidden flex flex-col h-[600px]">
         {/* Modal Header */}
         <div className="bg-[rgba(5,7,13,0.8)] px-5 py-3.5 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between">
@@ -72,9 +86,11 @@ export const CopilotModal: React.FC<CopilotModalProps> = ({ isOpen, onClose, evi
             <div>
               <div className="text-xs font-bold text-white flex items-center gap-2 font-mono">
                 AI FORENSIC COPILOT
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[rgba(139,92,246,0.15)] text-[#8B5CF6] border border-[rgba(139,92,246,0.3)]">
-                  {evidenceId}
-                </span>
+                {evidenceId && (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[rgba(139,92,246,0.15)] text-[#8B5CF6] border border-[rgba(139,92,246,0.3)]">
+                    {evidenceId}
+                  </span>
+                )}
               </div>
               <div className="text-[11px] text-slate-400">Strictly verified against parsed RFC headers, DNS, and telemetry</div>
             </div>

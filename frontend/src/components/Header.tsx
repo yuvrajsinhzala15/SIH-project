@@ -100,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenCases}
-            className="flex items-center gap-1.5 bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.08)] text-slate-200 border border-[rgba(255,255,255,0.08)] hover:border-[rgba(77,124,255,0.3)] px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+            className="flex items-center gap-1.5 bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.08)] text-slate-200 border border-[rgba(255,255,255,0.08)] hover:border-[rgba(77,124,255,0.3)] px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer"
           >
             <FolderGit2 className="w-3.5 h-3.5 text-[#4D7CFF]" />
             <span>Cases</span>
@@ -109,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
           {onOpenBlockchain && (
             <button
               onClick={onOpenBlockchain}
-              className="flex items-center gap-1.5 bg-[rgba(16,185,129,0.08)] hover:bg-[rgba(16,185,129,0.16)] text-emerald-300 border border-[rgba(16,185,129,0.25)] px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              className="flex items-center gap-1.5 bg-[rgba(16,185,129,0.08)] hover:bg-[rgba(16,185,129,0.16)] text-emerald-300 border border-[rgba(16,185,129,0.25)] px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer"
               title="Blockchain Evidence Integrity & Chain of Custody"
             >
               <Shield className="w-3.5 h-3.5 text-emerald-400" />
@@ -119,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenCopilot}
-            className="flex items-center gap-1.5 bg-[rgba(139,92,246,0.1)] hover:bg-[rgba(139,92,246,0.18)] text-violet-200 border border-[rgba(139,92,246,0.3)] px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.15)]"
+            className="flex items-center gap-1.5 bg-[rgba(139,92,246,0.1)] hover:bg-[rgba(139,92,246,0.18)] text-violet-200 border border-[rgba(139,92,246,0.3)] px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.15)] cursor-pointer"
           >
             <Bot className="w-3.5 h-3.5 text-[#8B5CF6]" />
             <span>AI Copilot</span>
@@ -127,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenUploader}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-[#37D7FF] via-[#4D7CFF] to-[#8B5CF6] hover:opacity-95 text-slate-950 font-bold px-3.5 py-1.5 rounded-lg text-xs transition-all shadow-[0_0_20px_rgba(55,215,255,0.3)]"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-[#37D7FF] via-[#4D7CFF] to-[#8B5CF6] hover:opacity-95 text-slate-950 font-bold px-3.5 py-1.5 rounded-lg text-xs transition-all shadow-[0_0_20px_rgba(55,215,255,0.3)] cursor-pointer"
           >
             <UploadCloud className="w-3.5 h-3.5" />
             <span>Ingest Evidence</span>

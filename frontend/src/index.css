@@ -86,10 +86,11 @@ body {
   pointer-events: none;
 }
 
-.futuristic-bg>* {
+.futuristic-bg > main {
   position: relative;
   z-index: 1;
 }
+
 
 /* Advanced Layered Glassmorphism Components */
 .glass-panel {
