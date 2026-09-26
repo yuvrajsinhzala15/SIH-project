@@ -52,14 +52,28 @@ export const App: React.FC = () => {
     try {
       const list = await api.getEvidenceList();
       setEvidenceList(list);
-      if (preferredId && list.some((e) => e.evidence_id === preferredId)) {
-        setSelectedEvidenceId(preferredId);
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlEv = urlParams.get("ev");
+      const targetId = preferredId || (urlEv && list.some(e => e.evidence_id === urlEv) ? urlEv : undefined);
+
+      if (targetId && list.some((e) => e.evidence_id === targetId)) {
+        setSelectedEvidenceId(targetId);
       } else if (list.length > 0) {
         setSelectedEvidenceId(list[0].evidence_id);
       } else {
         setSelectedEvidenceId(null);
         setCurrentEvidence(null);
       }
+
+      const urlTab = urlParams.get("tab");
+      if (urlTab) setActiveTab(urlTab);
+      const urlModal = urlParams.get("modal");
+      if (urlModal === "copilot") setCopilotOpen(true);
+      if (urlModal === "blockchain") setBlockchainModalOpen(true);
+      if (urlModal === "cases") setCaseModalOpen(true);
+      if (urlModal === "search") setSearchOpen(true);
+      if (urlModal === "uploader") setUploaderOpen(true);
+      if (urlParams.get("guide") === "false") setShowGuide(false);
     } catch (err) {
       console.error(err);
     }
